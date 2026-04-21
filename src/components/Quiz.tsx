@@ -5,10 +5,11 @@ import type { QuizQuestion } from "@/data/courses";
 
 interface QuizProps {
   questions: QuizQuestion[];
+  lessonId: string;
   onComplete?: (score: number, total: number) => void;
 }
 
-export default function Quiz({ questions, onComplete }: QuizProps) {
+export default function Quiz({ questions, lessonId, onComplete }: QuizProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -31,15 +32,16 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
   }
 
   function handleNext() {
+    const isCorrect = selectedOption === question.correctIndex;
+    const newScore = isCorrect && !isAnswered ? score : score;
+
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
       setSelectedOption(null);
       setIsAnswered(false);
     } else {
-      const finalScore =
-        score + (selectedOption === question.correctIndex ? 0 : 0);
       setIsComplete(true);
-      onComplete?.(finalScore, questions.length);
+      onComplete?.(score, questions.length);
     }
   }
 
@@ -112,7 +114,8 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
       {/* Options */}
       <div className="mb-6 space-y-3">
         {question.options.map((option, i) => {
-          let optionStyle = "border-border bg-background hover:border-primary/30 hover:bg-card-hover";
+          let optionStyle =
+            "border-border bg-background hover:border-primary/30 hover:bg-card-hover";
           if (isAnswered) {
             if (i === question.correctIndex) {
               optionStyle = "border-success bg-success/10";
@@ -185,7 +188,9 @@ export default function Quiz({ questions, onComplete }: QuizProps) {
             onClick={handleNext}
             className="rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-white transition-all hover:bg-primary-light"
           >
-            {currentIndex < questions.length - 1 ? "Question suivante" : "Voir les résultats"}
+            {currentIndex < questions.length - 1
+              ? "Question suivante"
+              : "Voir les résultats"}
           </button>
         )}
       </div>

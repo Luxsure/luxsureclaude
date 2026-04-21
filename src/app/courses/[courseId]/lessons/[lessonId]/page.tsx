@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLesson, getAllLessons } from "@/data/courses";
-import MarkdownRenderer from "@/components/MarkdownRenderer";
-import Quiz from "@/components/Quiz";
+import { LessonContent } from "@/components/LessonContent";
 
 interface Props {
   params: Promise<{ courseId: string; lessonId: string }>;
@@ -34,7 +33,10 @@ export default async function LessonPage({ params }: Props) {
     <div className="mx-auto max-w-4xl px-6 py-12">
       {/* Breadcrumb */}
       <nav className="mb-8 flex flex-wrap items-center gap-2 text-sm text-zinc-500">
-        <Link href="/courses" className="hover:text-foreground transition-colors">
+        <Link
+          href="/courses"
+          className="hover:text-foreground transition-colors"
+        >
           Cours
         </Link>
         <span>/</span>
@@ -54,9 +56,7 @@ export default async function LessonPage({ params }: Props) {
           <span className="rounded-md bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary-light">
             {moduleTitle}
           </span>
-          <span className="text-xs text-zinc-600">
-            ⏱️ {lesson.duration}
-          </span>
+          <span className="text-xs text-zinc-600">⏱️ {lesson.duration}</span>
           <span className="text-xs text-zinc-600">
             Leçon {currentIndex + 1} / {allLessons.length}
           </span>
@@ -80,20 +80,8 @@ export default async function LessonPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Lesson content */}
-      <article className="mb-12 rounded-2xl border border-border bg-card p-6 md:p-10">
-        <MarkdownRenderer content={lesson.content} />
-      </article>
-
-      {/* Quiz section */}
-      {lesson.quiz && lesson.quiz.length > 0 && (
-        <section className="mb-12">
-          <h2 className="mb-4 text-xl font-bold text-foreground">
-            🧪 Testez vos connaissances
-          </h2>
-          <Quiz questions={lesson.quiz} />
-        </section>
-      )}
+      {/* Lesson content + Quiz with persistence */}
+      <LessonContent lesson={lesson} course={course} />
 
       {/* Navigation */}
       <div className="flex items-center justify-between gap-4">
@@ -134,9 +122,7 @@ export default async function LessonPage({ params }: Props) {
           >
             <div className="text-right">
               <div className="text-xs text-success/60">Terminé</div>
-              <div className="font-medium text-success">
-                Retour au cours
-              </div>
+              <div className="font-medium text-success">Retour au cours</div>
             </div>
             <span className="text-success">✓</span>
           </Link>
