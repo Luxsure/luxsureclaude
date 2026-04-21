@@ -34,6 +34,26 @@ create policy "Admins can view all profiles"
   );
 
 -- ============================================================
+-- SUBSCRIPTIONS (Stripe) — placed early because lessons RLS references it
+-- ============================================================
+create table public.subscriptions (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references public.profiles(id) on delete cascade unique,
+  status text not null default 'active' check (status in ('active', 'canceled', 'past_due', 'trialing')),
+  plan text not null default 'free' check (plan in ('free', 'pro', 'team')),
+  stripe_customer_id text,
+  stripe_subscription_id text,
+  current_period_end timestamptz,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.subscriptions enable row level security;
+
+create policy "Users can view own subscription"
+  on public.subscriptions for select using (auth.uid() = user_id);
+
+-- ============================================================
 -- COURSES
 -- ============================================================
 create table public.courses (
@@ -226,26 +246,6 @@ alter table public.user_badges enable row level security;
 
 create policy "Users can view own badges"
   on public.user_badges for select using (auth.uid() = user_id);
-
--- ============================================================
--- SUBSCRIPTIONS (Stripe)
--- ============================================================
-create table public.subscriptions (
-  id uuid primary key default uuid_generate_v4(),
-  user_id uuid not null references public.profiles(id) on delete cascade unique,
-  status text not null default 'active' check (status in ('active', 'canceled', 'past_due', 'trialing')),
-  plan text not null default 'free' check (plan in ('free', 'pro', 'team')),
-  stripe_customer_id text,
-  stripe_subscription_id text,
-  current_period_end timestamptz,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
-alter table public.subscriptions enable row level security;
-
-create policy "Users can view own subscription"
-  on public.subscriptions for select using (auth.uid() = user_id);
 
 -- ============================================================
 -- ADMIN AUDIT LOG
