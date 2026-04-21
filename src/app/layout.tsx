@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Providers } from "@/components/providers";
+import { Navbar } from "@/components/Navbar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -7,41 +9,6 @@ export const metadata: Metadata = {
   description:
     "Apprenez à maîtriser l'intelligence artificielle avec des cours interactifs, des quiz et des parcours personnalisés.",
 };
-
-function Navbar() {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-2xl">🎓</span>
-          <span className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            AI Fluency Academy
-          </span>
-        </Link>
-        <div className="flex items-center gap-8">
-          <Link
-            href="/courses"
-            className="text-sm text-zinc-400 transition-colors hover:text-foreground"
-          >
-            Cours
-          </Link>
-          <Link
-            href="/dashboard"
-            className="text-sm text-zinc-400 transition-colors hover:text-foreground"
-          >
-            Tableau de bord
-          </Link>
-          <Link
-            href="/dashboard"
-            className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-all hover:bg-primary-light hover:shadow-lg hover:shadow-primary/25"
-          >
-            Mon profil
-          </Link>
-        </div>
-      </div>
-    </nav>
-  );
-}
 
 function Footer() {
   return (
@@ -103,9 +70,11 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className="antialiased">
-        <Navbar />
-        <main className="pt-16">{children}</main>
-        <Footer />
+        <Providers>
+          <Navbar />
+          <main className="pt-16">{children}</main>
+          <Footer />
+        </Providers>
       </body>
     </html>
   );
