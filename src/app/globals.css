@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap");
 
 @theme inline {
   --color-background: #0a0a0f;
@@ -12,14 +13,44 @@
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  /* Luxsure Guide — gold palette */
+  --color-gold: #C9A84C;
+  --color-gold-light: #E8C97A;
+  --color-gold-dark: #8B6914;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+  --font-serif: "Playfair Display", "Georgia", "Times New Roman", serif;
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
 }
+
+.font-serif { font-family: var(--font-serif); }
+.text-gold  { color: var(--color-gold); }
+.text-gold-light { color: var(--color-gold-light); }
+.bg-gold    { background-color: var(--color-gold); }
+.border-gold { border-color: var(--color-gold); }
+.border-gold\/30 { border-color: color-mix(in srgb, var(--color-gold) 30%, transparent); }
+.border-gold\/40 { border-color: color-mix(in srgb, var(--color-gold) 40%, transparent); }
+.border-gold\/60 { border-color: color-mix(in srgb, var(--color-gold) 60%, transparent); }
+.bg-gold\/5  { background-color: color-mix(in srgb, var(--color-gold) 5%, transparent); }
+.bg-gold\/10 { background-color: color-mix(in srgb, var(--color-gold) 10%, transparent); }
+.hover\:text-gold:hover { color: var(--color-gold); }
+.hover\:text-gold-light:hover { color: var(--color-gold-light); }
+.hover\:border-gold\/30:hover { border-color: color-mix(in srgb, var(--color-gold) 30%, transparent); }
+.hover\:border-gold\/40:hover { border-color: color-mix(in srgb, var(--color-gold) 40%, transparent); }
+.hover\:bg-gold\/10:hover { background-color: color-mix(in srgb, var(--color-gold) 10%, transparent); }
+.from-gold-light { --tw-gradient-from: var(--color-gold-light); }
+.via-gold        { --tw-gradient-via: var(--color-gold); }
+.to-gold-dark    { --tw-gradient-to: var(--color-gold-dark); }
+.focus\:border-gold\/40:focus { border-color: color-mix(in srgb, var(--color-gold) 40%, transparent); }
+.focus\:ring-gold\/20:focus { --tw-ring-color: color-mix(in srgb, var(--color-gold) 20%, transparent); }
+
+/* Hide scrollbar but keep scroll */
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {

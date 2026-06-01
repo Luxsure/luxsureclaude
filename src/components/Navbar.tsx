@@ -46,6 +46,13 @@ export function Navbar() {
 
         <div className="flex items-center gap-6">
           <Link
+            href="/guide"
+            className="text-sm font-medium transition-colors hover:text-gold"
+            style={{ color: "#C9A84C" }}
+          >
+            Le Guide
+          </Link>
+          <Link
             href="/courses"
             className="text-sm text-zinc-400 transition-colors hover:text-foreground"
           >
