@@ -1,9 +1,13 @@
+import java.net.URI
+import java.io.FileOutputStream
+
 plugins {
   alias(libs.plugins.android.application)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.google.devtools.ksp)
   alias(libs.plugins.roborazzi)
   alias(libs.plugins.secrets)
+  id("org.jetbrains.kotlin.plugin.serialization") version "2.2.10"
 }
 
 android {
@@ -11,13 +15,24 @@ android {
   compileSdk { version = release(36) { minorApiLevel = 1 } }
 
   defaultConfig {
-    applicationId = "com.aistudio.luxsureguide.kynzpt"
+    applicationId = "fr.luxsure.guide"
     minSdk = 24
     targetSdk = 36
     versionCode = 1
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    // Read credentials from env vars (CI) or project properties (local .env / gradle.properties).
+    // Never hardcode these values — commit the .env.example template, not the real keys.
+    val supabaseUrl = System.getenv("SUPABASE_URL")
+        ?: project.findProperty("SUPABASE_URL")?.toString()
+        ?: ""
+    val supabaseAnonKey = System.getenv("SUPABASE_ANON_KEY")
+        ?: project.findProperty("SUPABASE_ANON_KEY")?.toString()
+        ?: ""
+    buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+    buildConfigField("String", "SUPABASE_ANON_KEY", "\"$supabaseAnonKey\"")
   }
 
   signingConfigs {
@@ -119,4 +134,60 @@ dependencies {
   debugImplementation(libs.androidx.compose.ui.tooling)
   "ksp"(libs.androidx.room.compiler)
   "ksp"(libs.moshi.kotlin.codegen)
+
+  // Supabase & Ktor integration
+  implementation(platform("io.github.jan-tennert.supabase:bom:2.5.4"))
+  implementation("io.github.jan-tennert.supabase:supabase-kt")
+  implementation("io.github.jan-tennert.supabase:postgrest-kt")
+  implementation("io.github.jan-tennert.supabase:gotrue-kt")
+  implementation("io.ktor:ktor-client-android:2.3.12")
+  implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
+
+tasks.register("downloadFonts") {
+    doLast {
+        val fontDir = file("src/main/res/font")
+        if (!fontDir.exists()) {
+            fontDir.mkdirs()
+        }
+        val baseUrl = "https://raw.githubusercontent.com/google/fonts/main/ofl/cormorantgaramond/"
+        val fontNames = listOf(
+            "CormorantGaramond%5Bwght%5D.ttf",
+            "CormorantGaramond-Italic%5Bwght%5D.ttf",
+            "CormorantGaramond%5Bwght%5D.ttf"
+        )
+        val outNames = listOf(
+            "cormorant_garamond_regular.ttf",
+            "cormorant_garamond_italic.ttf",
+            "cormorant_garamond_medium.ttf"
+        )
+        for (i in 0 until fontNames.size) {
+            val src = fontNames[i]
+            val dest = outNames[i]
+            val destFile = file("src/main/res/font/$dest")
+            if (!destFile.exists()) {
+                println("Downloading $src...")
+                try {
+                    val uri = URI(baseUrl + src)
+                    val conn = uri.toURL().openConnection()
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+                    conn.connect()
+                    val inputStream = conn.getInputStream()
+                    val outputStream = FileOutputStream(destFile)
+                    val buffer = ByteArray(4096)
+                    var bytesRead = inputStream.read(buffer)
+                    while (bytesRead != -1) {
+                        outputStream.write(buffer, 0, bytesRead)
+                        bytesRead = inputStream.read(buffer)
+                    }
+                    outputStream.close()
+                    inputStream.close()
+                    println("Successfully downloaded $src -> $dest")
+                } catch (e: Exception) {
+                    println("Error downloading font $src: ${e.message} (${e.javaClass.name})")
+                }
+            }
+        }
+    }
+}
+

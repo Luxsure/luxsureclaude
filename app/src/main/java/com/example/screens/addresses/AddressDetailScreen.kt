@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -132,7 +132,7 @@ fun AddressDetailScreen(
                         .testTag("detail_back_button")
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Retour",
                         tint = Ivory,
                         modifier = Modifier.size(20.dp)
@@ -481,7 +481,7 @@ fun AddressDetailScreen(
                 contentPadding = PaddingValues(horizontal = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(address.gallery, key = { it }) { imageUrl ->
+                items(address.gallery) { imageUrl ->
                     AsyncImage(
                         model = imageUrl,
                         contentDescription = "Galerie",

@@ -1,90 +1,136 @@
 package com.example.screens
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.automirrored.outlined.List
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.*
-import androidx.navigation.compose.*
+import com.example.ui.theme.Ink
+import com.example.ui.theme.Muted
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.models.LuxsureViewModel
 import com.example.screens.addresses.AddressDetailScreen
 import com.example.screens.addresses.AddressesScreen
+import com.example.screens.categories.CategoriesScreen
+import com.example.screens.destinations.DestinationsScreen
 import com.example.screens.guide.GuideScreen
 import com.example.screens.home.HomeScreen
 import com.example.ui.theme.Gold
-import com.example.ui.theme.Ink
 import com.example.ui.theme.Ivory
-import com.example.ui.theme.Line
-import com.example.ui.theme.Muted
 
-private enum class TopLevel(val route: String, val label: String, val icon: ImageVector) {
-    HOME("home", "Accueil", Icons.Filled.Home),
-    ADDRESSES("addresses", "Explorer", Icons.Filled.List),
-    GUIDE("guide", "Guide", Icons.Filled.Bookmark),
+// Define routes
+const val ROUTE_HOME = "home"
+const val ROUTE_ADDRESSES = "addresses"
+const val ROUTE_CATEGORIES = "categories"
+const val ROUTE_DESTINATIONS = "destinations"
+const val ROUTE_GUIDE = "guide"
+const val ROUTE_DETAIL = "addresses/{slug}"
+
+// Define navigation tabs
+sealed class TabItem(
+    val route: String,
+    val title: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+    val testTag: String
+) {
+    object Home : TabItem(ROUTE_HOME, "Accueil", Icons.Filled.Home, Icons.Outlined.Home, "tab_home")
+    object Addresses : TabItem(ROUTE_ADDRESSES, "Adresses", Icons.Filled.Search, Icons.Outlined.Search, "tab_addresses")
+    object Categories : TabItem(ROUTE_CATEGORIES, "Catégories", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List, "tab_categories")
+    object Destinations : TabItem(ROUTE_DESTINATIONS, "Voyages", Icons.Filled.Place, Icons.Outlined.Place, "tab_destinations")
+    object Guide : TabItem(ROUTE_GUIDE, "Le Guide", Icons.Filled.Info, Icons.Outlined.Info, "tab_guide")
 }
 
-private const val ADDRESSES_ROUTE =
-    "addresses?query={query}&category={category}&destination={destination}"
-private const val DETAIL_ROUTE = "addressDetail/{slug}"
+val allTabs = listOf(
+    TabItem.Home,
+    TabItem.Addresses,
+    TabItem.Categories,
+    TabItem.Destinations,
+    TabItem.Guide
+)
 
 @Composable
-fun MainAppShell(viewModel: LuxsureViewModel = viewModel()) {
+fun MainAppShell(
+    modifier: Modifier = Modifier,
+    viewModel: LuxsureViewModel = viewModel()
+) {
     val navController = rememberNavController()
-    val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
 
-    val isTopLevel = TopLevel.entries.any { currentRoute?.startsWith(it.route) == true }
+    // Hide bottom bar on detail screen for full screen focus
+    val showBottomBar = currentRoute != ROUTE_DETAIL
 
     Scaffold(
+        modifier = modifier.fillMaxSize(),
         bottomBar = {
-            if (isTopLevel) {
+            if (showBottomBar) {
                 NavigationBar(
-                    containerColor = Ivory,
-                    tonalElevation = 0.dp
+                    containerColor = MaterialTheme.colorScheme.background,
+                    tonalElevation = 8.dp,
+                    windowInsets = WindowInsets.navigationBars,
+                    modifier = Modifier.testTag("app_bottom_bar")
                 ) {
-                    TopLevel.entries.forEach { item ->
-                        val selected = currentRoute?.startsWith(item.route) == true
+                    allTabs.forEach { tab ->
+                        val isSelected = currentRoute == tab.route || (tab.route == ROUTE_ADDRESSES && currentRoute?.startsWith(ROUTE_ADDRESSES) == true)
                         NavigationBarItem(
-                            selected = selected,
+                            selected = isSelected,
                             onClick = {
-                                if (!selected) {
-                                    navController.navigate(item.route) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                if (tab.route == ROUTE_ADDRESSES) {
+                                    // Reset active category filters if they click tab directly
+                                    viewModel.selectCategory(null)
+                                    viewModel.selectDestination(null)
+                                }
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             },
                             icon = {
                                 Icon(
-                                    imageVector = item.icon,
-                                    contentDescription = item.label,
-                                    modifier = Modifier.size(20.dp)
+                                    imageVector = if (isSelected) tab.selectedIcon else tab.unselectedIcon,
+                                    contentDescription = tab.title,
+                                    tint = if (isSelected) Ink else Muted
                                 )
                             },
                             label = {
                                 Text(
-                                    text = item.label,
-                                    style = MaterialTheme.typography.labelSmall
+                                    text = tab.title,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (isSelected) Ink else Muted
                                 )
                             },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Ink,
-                                selectedTextColor = Gold,
-                                indicatorColor = Line.copy(alpha = 0.4f),
-                                unselectedIconColor = Muted,
-                                unselectedTextColor = Muted
-                            )
+                                indicatorColor = Gold.copy(alpha = 0.2f)
+                            ),
+                            modifier = Modifier.testTag(tab.testTag)
                         )
                     }
                 }
@@ -93,45 +139,67 @@ fun MainAppShell(viewModel: LuxsureViewModel = viewModel()) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = TopLevel.HOME.route,
+            startDestination = ROUTE_HOME,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(TopLevel.HOME.route) {
+            // Screen 1: Home Dashboard
+            composable(ROUTE_HOME) {
                 HomeScreen(
                     viewModel = viewModel,
-                    onNavigateToAddresses = { query, category, destination ->
-                        navController.navigate(buildAddressRoute(query, category, destination))
+                    onNavigateToAddresses = { query, categorySlug, destinationSlug ->
+                        viewModel.resetFilters()
+                        if (query != null) viewModel.updateSearchQuery(query)
+                        if (categorySlug != null) viewModel.selectCategory(categorySlug)
+                        if (destinationSlug != null) viewModel.selectDestination(destinationSlug)
+                        navController.navigate(ROUTE_ADDRESSES) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     },
                     onNavigateToAddressDetail = { slug ->
-                        navController.navigate("addressDetail/$slug")
+                        navController.navigate("addresses/$slug")
                     }
                 )
             }
 
+            // Screen 2: Addresses Multi-Filter Search
             composable(
-                route = ADDRESSES_ROUTE,
+                route = ROUTE_ADDRESSES,
                 arguments = listOf(
-                    navArgument("query") { nullable = true; defaultValue = null },
-                    navArgument("category") { nullable = true; defaultValue = null },
-                    navArgument("destination") { nullable = true; defaultValue = null }
+                    navArgument("category") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument("destination") {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
                 )
-            ) { back ->
+            ) { backStackEntry ->
+                val categoryArg = backStackEntry.arguments?.getString("category")
+                val destinationArg = backStackEntry.arguments?.getString("destination")
+
                 AddressesScreen(
                     viewModel = viewModel,
-                    initialQuery = back.arguments?.getString("query"),
-                    initialCategorySlug = back.arguments?.getString("category"),
-                    initialDestinationSlug = back.arguments?.getString("destination"),
+                    initialCategorySlug = categoryArg,
+                    initialDestinationSlug = destinationArg,
                     onNavigateToAddressDetail = { slug ->
-                        navController.navigate("addressDetail/$slug")
+                        navController.navigate("addresses/$slug")
                     }
                 )
             }
 
+            // Screen 3: Detail View
             composable(
-                route = DETAIL_ROUTE,
-                arguments = listOf(navArgument("slug") { type = NavType.StringType })
-            ) { back ->
-                val slug = back.arguments?.getString("slug") ?: return@composable
+                route = ROUTE_DETAIL,
+                arguments = listOf(
+                    navArgument("slug") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val slug = backStackEntry.arguments?.getString("slug") ?: ""
                 AddressDetailScreen(
                     viewModel = viewModel,
                     slug = slug,
@@ -139,19 +207,42 @@ fun MainAppShell(viewModel: LuxsureViewModel = viewModel()) {
                 )
             }
 
-            composable(TopLevel.GUIDE.route) {
+            // Screen 4: Categories Catalog
+            composable(ROUTE_CATEGORIES) {
+                CategoriesScreen(
+                    viewModel = viewModel,
+                    onCategorySelected = { slug ->
+                        viewModel.resetFilters()
+                        viewModel.selectCategory(slug)
+                        navController.navigate(ROUTE_ADDRESSES) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
+
+            // Screen 5: Destinations Catalog
+            composable(ROUTE_DESTINATIONS) {
+                DestinationsScreen(
+                    viewModel = viewModel,
+                    onDestinationSelected = { slug ->
+                        viewModel.resetFilters()
+                        viewModel.selectDestination(slug)
+                        navController.navigate(ROUTE_ADDRESSES) {
+                            popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
+
+            // Screen 6: Editorial Guide Story
+            composable(ROUTE_GUIDE) {
                 GuideScreen()
             }
         }
     }
-}
-
-private fun buildAddressRoute(query: String?, category: String?, destination: String?): String {
-    val params = buildList {
-        query?.let { add("query=$it") }
-        category?.let { add("category=$it") }
-        destination?.let { add("destination=$it") }
-    }
-    return if (params.isEmpty()) TopLevel.ADDRESSES.route
-    else "${TopLevel.ADDRESSES.route}?${params.joinToString("&")}"
 }

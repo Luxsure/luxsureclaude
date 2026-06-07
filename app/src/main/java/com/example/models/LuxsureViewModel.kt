@@ -3,16 +3,20 @@ package com.example.models
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 class LuxsureViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = AddressRepository(application)
 
+    private val _syncResult = MutableStateFlow<SyncResult>(SyncResult.Idle)
+    val syncResult: StateFlow<SyncResult> = _syncResult.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.checkAndSeedDatabase()
+            _syncResult.value = SyncResult.Syncing
+            _syncResult.value = repository.syncFromSupabase()
         }
     }
 
@@ -53,7 +57,7 @@ class LuxsureViewModel(application: Application) : AndroidViewModel(application)
         )
 
     // Consolidate 5 individual filter flows into a single typed struct so the
-    // downstream combine only needs 2 inputs (typed lambda, no array casts).
+    // downstream combine only needs 2 typed inputs — no array casts needed.
     private data class FilterState(
         val query: String,
         val categorySlug: String?,
@@ -111,8 +115,8 @@ class LuxsureViewModel(application: Application) : AndroidViewModel(application)
         initialValue = emptyList()
     )
 
-    // One stable StateFlow per slug — recompositions share the same instance rather
-    // than spawning a new coroutine on every call.
+    // One stable StateFlow per slug — recompositions reuse the same instance instead
+    // of spawning a new coroutine on every call.
     private val addressDetailCache = mutableMapOf<String, StateFlow<Address?>>()
 
     fun getAddressBySlug(slug: String): StateFlow<Address?> {
@@ -152,8 +156,8 @@ class LuxsureViewModel(application: Application) : AndroidViewModel(application)
     fun refreshContent() {
         viewModelScope.launch {
             _isRefreshing.value = true
-            delay(1200)
-            repository.checkAndSeedDatabase()
+            _syncResult.value = SyncResult.Syncing
+            _syncResult.value = repository.syncFromSupabase()
             _isRefreshing.value = false
         }
     }

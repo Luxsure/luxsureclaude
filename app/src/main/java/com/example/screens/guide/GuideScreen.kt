@@ -62,7 +62,7 @@ fun GuideScreen(
         Spacer(modifier = Modifier.height(20.dp))
 
         // Fine separator line
-        Divider(color = Line, thickness = 0.5.dp, modifier = Modifier.width(80.dp))
+        HorizontalDivider(color = Line, thickness = 0.5.dp, modifier = Modifier.width(80.dp))
 
         Spacer(modifier = Modifier.height(24.dp))
 

@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.example.models.Address
 import com.example.models.Category
 import com.example.models.Destination
@@ -35,6 +38,7 @@ import com.example.ui.theme.Ivory
 import com.example.ui.theme.Line
 import com.example.ui.theme.Muted
 import com.example.widgets.AddressCard
+import com.example.models.SyncResult
 import com.example.widgets.SectionHeader
 
 @Composable
@@ -47,6 +51,7 @@ fun HomeScreen(
     val addresses by viewModel.rawAddresses.collectAsState()
     val categories = viewModel.categories
     val destinations = viewModel.destinations
+    val syncResult by viewModel.syncResult.collectAsState()
 
     val featuredAddresses = addresses.filter { it.featured }.take(6)
 
@@ -56,6 +61,12 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState())
             .background(MaterialTheme.colorScheme.background)
     ) {
+        // ── SUPABASE SYNC STATUS ACCORDION ────────────────────────────────
+        SupabaseSyncStatusBanner(
+            syncResult = syncResult,
+            onTriggerSync = { viewModel.refreshContent() }
+        )
+
         // ── HERO SECTION ──────────────────────────────────────────────────
         HeroSection(
             onQuickTagClick = { tag -> onNavigateToAddresses(tag, null, null) },
@@ -433,6 +444,141 @@ private fun OccasionsGrid(
                         style = MaterialTheme.typography.bodySmall,
                         color = Muted
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SupabaseSyncStatusBanner(
+    syncResult: com.example.models.SyncResult,
+    onTriggerSync: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded }
+            .testTag("supabase_sync_banner")
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    val statusDotColor = when (syncResult) {
+                        is SyncResult.Syncing -> Gold
+                        is SyncResult.Success -> Color(0xFF4CAF50)
+                        is SyncResult.Error -> Color(0xFFF44336)
+                        is SyncResult.NotConfigured -> Muted
+                        else -> Gold.copy(alpha = 0.6f)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(statusDotColor)
+                    )
+
+                    val statusTitle = when (syncResult) {
+                        is SyncResult.Idle -> "Luxsure Direct • Synchronisé"
+                        is SyncResult.Syncing -> "Mise à jour du Guide..."
+                        is SyncResult.Success -> "Guide Synchronisé • ${syncResult.count} Adresses"
+                        is SyncResult.Error -> "Mode Local Activé (Erreur de Sync)"
+                        is SyncResult.NotConfigured -> "Mode Local Actif (Pas de Supabase)"
+                    }
+
+                    Text(
+                        text = statusTitle.uppercase(),
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            letterSpacing = 1.2.sp,
+                            fontSize = 10.sp
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    if (syncResult is SyncResult.Syncing) {
+                        CircularProgressIndicator(
+                            color = Gold,
+                            strokeWidth = 1.5.dp,
+                            modifier = Modifier.size(12.dp)
+                        )
+                    } else {
+                        Text(
+                            text = if (expanded) "MASQUER DET." else "DÉTAILS SYNC",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = Gold,
+                                letterSpacing = 1.sp,
+                                fontSize = 9.sp
+                            )
+                        )
+                    }
+                }
+            }
+
+            if (expanded) {
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider(color = Line.copy(alpha = 0.3f), thickness = 0.5.dp)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                val detailedMessage = when (syncResult) {
+                    is SyncResult.Idle -> 
+                        "Le guide utilise les données stockées localement. Tirez vers le bas ou cliquez sur synchroniser pour importer depuis Supabase."
+                    is SyncResult.Syncing -> 
+                        "Récupération des adresses de l'édition 2026 depuis Postgrest Supabase en arrière-plan..."
+                    is SyncResult.Success -> 
+                        "La synchronisation a réussi ! Le guide a importé et mis à jour ${syncResult.count} adresses sans écraser vos favoris."
+                    is SyncResult.Error -> 
+                        "Une erreur est survenue lors du rafraîchissement :\n${syncResult.message}\n\nAssurez-vous que votre projet Supabase est actif et que vos clés d'API configurées dans AI Studio sont valides."
+                    is SyncResult.NotConfigured -> 
+                        "Les variables SUPABASE_URL et SUPABASE_ANON_KEY ne sont pas renseignées dans les secrets de l'application.\n\n" +
+                        "Afin de connecter votre base de données en ligne, veuillez entrer vos secrets dans le panneau Secrets de Google AI Studio puis compilez à nouveau."
+                }
+
+                Text(
+                    text = detailedMessage,
+                    style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp, lineHeight = 16.sp),
+                    color = Muted
+                )
+
+                if (syncResult !is SyncResult.Syncing) {
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Button(
+                        onClick = onTriggerSync,
+                        colors = ButtonDefaults.buttonColors(containerColor = Ink),
+                        shape = RoundedCornerShape(2.dp),
+                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp),
+                        modifier = Modifier
+                            .height(28.dp)
+                            .testTag("trigger_sync_button")
+                    ) {
+                        Text(
+                            text = "FORCE-SYNC AVEC SUPABASE",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = Ivory,
+                                fontSize = 9.sp,
+                                letterSpacing = 1.sp
+                            )
+                        )
+                    }
                 }
             }
         }

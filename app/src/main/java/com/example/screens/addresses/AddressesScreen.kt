@@ -16,16 +16,18 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.*
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.models.Address
 import com.example.models.LuxsureViewModel
 import com.example.ui.theme.Gold
 import com.example.ui.theme.Ink
@@ -46,11 +49,11 @@ import com.example.widgets.AddressCard
 fun AddressesScreen(
     viewModel: LuxsureViewModel,
     modifier: Modifier = Modifier,
-    initialQuery: String? = null,
     initialCategorySlug: String? = null,
     initialDestinationSlug: String? = null,
     onNavigateToAddressDetail: (String) -> Unit
 ) {
+    // Collect states
     val addresses by viewModel.filteredAddresses.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
     val selectedCat by viewModel.selectedCategorySlug.collectAsState()
@@ -59,12 +62,11 @@ fun AddressesScreen(
     val showOnlyFavs by viewModel.showOnlyFavorites.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     var isMapView by rememberSaveable { mutableStateOf(false) }
+    var showDestinationBottomSheet by rememberSaveable { mutableStateOf(false) }
 
-    // Apply initial nav params once — never call ViewModel methods directly in the body
-    LaunchedEffect(initialQuery, initialCategorySlug, initialDestinationSlug) {
-        if (initialQuery != null || initialCategorySlug != null || initialDestinationSlug != null) {
-            viewModel.resetFilters()
-            initialQuery?.let { viewModel.updateSearchQuery(it) }
+    // Apply initial nav params via LaunchedEffect — never call ViewModel directly in the body
+    LaunchedEffect(initialCategorySlug, initialDestinationSlug) {
+        if (initialCategorySlug != null || initialDestinationSlug != null) {
             initialCategorySlug?.let { viewModel.selectCategory(it) }
             initialDestinationSlug?.let { viewModel.selectDestination(it) }
         }
@@ -140,6 +142,7 @@ fun AddressesScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // "Tous" chip
             item {
                 FilterChip(
                     label = "Tous",
@@ -176,6 +179,7 @@ fun AddressesScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Favorites toggler
             item {
                 Row(
                     modifier = Modifier
@@ -206,26 +210,18 @@ fun AddressesScreen(
                 }
             }
 
+            // Destinations filter preset
             item {
                 DropdownFilter(
                     label = selectedDest?.uppercase() ?: "DESTINATIONS",
                     isSelected = selectedDest != null,
                     onClear = { viewModel.selectDestination(null) },
-                    onClick = {
-                        val dests = viewModel.destinations.map { it.slug }
-                        val nextDest = when (selectedDest) {
-                            null -> dests.firstOrNull()
-                            else -> {
-                                val index = dests.indexOf(selectedDest)
-                                if (index < dests.size - 1) dests[index + 1] else null
-                            }
-                        }
-                        viewModel.selectDestination(nextDest)
-                    },
+                    onClick = { showDestinationBottomSheet = true },
                     modifier = Modifier.testTag("chip_destinations_scroller")
                 )
             }
 
+            // Price Scroller
             item {
                 DropdownFilter(
                     label = when (selectedPrice) {
@@ -268,7 +264,7 @@ fun AddressesScreen(
                 color = Muted,
                 letterSpacing = 1.sp
             )
-
+            
             Row(
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
@@ -280,7 +276,7 @@ fun AddressesScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = if (isMapView) Icons.Filled.List else Icons.Filled.Place,
+                    imageVector = if (isMapView) Icons.AutoMirrored.Filled.List else Icons.Filled.Place,
                     contentDescription = null,
                     tint = Gold,
                     modifier = Modifier.size(14.dp)
@@ -297,86 +293,145 @@ fun AddressesScreen(
 
         HorizontalDivider(color = Line, thickness = 0.5.dp)
 
-        // ── PULL TO REFRESH INDICATION HEADER ─────────────────────────────
-        AnimatedVisibility(
-            visible = isRefreshing,
-            enter = expandVertically() + fadeIn(),
-            exit = shrinkVertically() + fadeOut()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
-                    .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
+        // ── ADDRESSES LISTING / DATA VIEW SWAP ────────────────────────────
+        Box(modifier = Modifier.weight(1f)) {
+            PullToRefreshBox(
+                isRefreshing = isRefreshing,
+                onRefresh = { viewModel.refreshContent() },
+                modifier = Modifier.fillMaxSize()
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    CircularProgressIndicator(
-                        color = Gold,
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp
+                if (addresses.isEmpty()) {
+                    EmptyStateView(
+                        onReset = { viewModel.resetFilters() }
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Re-synchronisation éditoriale...",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Muted
-                    )
+                } else if (isMapView) {
+                    val geocodedAddresses = remember(addresses) { addresses.filter { it.lat != null && it.lng != null } }
+                    if (geocodedAddresses.size < 3) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Coordonnées limitées pour cette sélection",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = Muted
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                items(addresses, key = { it.id }) { address ->
+                                    val cat = viewModel.categories.find { it.slug == address.categorySlug }
+                                    val dest = viewModel.destinations.find { it.slug == address.destinationSlug }
+                                    AddressCard(
+                                        address = address,
+                                        categoryName = cat?.name,
+                                        destinationName = dest?.name,
+                                        onCardClick = { onNavigateToAddressDetail(address.slug) },
+                                        onFavoriteToggle = { viewModel.toggleFavorite(address) }
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        AddressMapView(
+                            addresses = addresses,
+                            onNavigateToAddressDetail = onNavigateToAddressDetail,
+                            modifier = Modifier.testTag("address_map_view")
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .testTag("addresses_lazy_column"),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(24.dp)
+                    ) {
+                        items(addresses, key = { it.id }) { address ->
+                            val cat = viewModel.categories.find { it.slug == address.categorySlug }
+                            val dest = viewModel.destinations.find { it.slug == address.destinationSlug }
+                            AddressCard(
+                                address = address,
+                                categoryName = cat?.name,
+                                destinationName = dest?.name,
+                                onCardClick = { onNavigateToAddressDetail(address.slug) },
+                                onFavoriteToggle = { viewModel.toggleFavorite(address) }
+                            )
+                        }
+                    }
                 }
             }
         }
 
-        // ── ADDRESSES LISTING / DATA VIEW SWAP ────────────────────────────
-        Box(modifier = Modifier.weight(1f)) {
-            if (addresses.isEmpty()) {
-                EmptyStateView(onReset = { viewModel.resetFilters() })
-            } else if (isMapView) {
-                AddressMapView(
-                    addresses = addresses,
-                    onNavigateToAddressDetail = onNavigateToAddressDetail,
-                    modifier = Modifier.testTag("address_map_view")
-                )
-            } else {
-                LazyColumn(
+        if (showDestinationBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = { showDestinationBottomSheet = false },
+                sheetState = rememberModalBottomSheetState(),
+                containerColor = MaterialTheme.colorScheme.background
+            ) {
+                Column(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .testTag("addresses_lazy_column"),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(24.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
+                        .padding(bottom = 32.dp)
                 ) {
-                    item {
+                    Text(
+                        text = "SÉLECTIONNER UNE DESTINATION",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Muted,
+                        letterSpacing = 2.sp,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    viewModel.destinations.forEach { dest ->
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { viewModel.refreshContent() }
-                                .padding(vertical = 4.dp),
-                            horizontalArrangement = Arrangement.Center,
+                                .clickable {
+                                    viewModel.selectDestination(dest.slug)
+                                    showDestinationBottomSheet = false
+                                }
+                                .padding(vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(
-                                Icons.Filled.Refresh,
-                                contentDescription = null,
-                                tint = Muted,
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                "Actualiser le guide",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = Muted
+                                text = dest.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = if (selectedDest == dest.slug) Gold else MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.weight(1f)
                             )
+                            if (selectedDest == dest.slug) {
+                                Icon(
+                                    imageVector = Icons.Filled.Place,
+                                    contentDescription = "Active",
+                                    tint = Gold,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
                         }
+                        HorizontalDivider(color = Line, thickness = 0.5.dp)
                     }
 
-                    items(addresses, key = { it.id }) { address ->
-                        val cat = viewModel.categories.find { it.slug == address.categorySlug }
-                        val dest = viewModel.destinations.find { it.slug == address.destinationSlug }
-                        AddressCard(
-                            address = address,
-                            categoryName = cat?.name,
-                            destinationName = dest?.name,
-                            onCardClick = { onNavigateToAddressDetail(it.slug) },
-                            onFavoriteToggle = { viewModel.toggleFavorite(it) }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                viewModel.selectDestination(null)
+                                showDestinationBottomSheet = false
+                            }
+                            .padding(vertical = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Toutes les destinations".uppercase(),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Muted,
+                            letterSpacing = 1.sp
                         )
                     }
                 }
@@ -446,7 +501,9 @@ private fun DropdownFilter(
 }
 
 @Composable
-private fun EmptyStateView(onReset: () -> Unit) {
+private fun EmptyStateView(
+    onReset: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -477,6 +534,7 @@ private fun EmptyStateView(onReset: () -> Unit) {
                     color = Muted,
                     modifier = Modifier.padding(bottom = 20.dp)
                 )
+
                 Button(
                     onClick = onReset,
                     colors = ButtonDefaults.buttonColors(containerColor = Ink),

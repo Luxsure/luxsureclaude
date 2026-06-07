@@ -15,6 +15,12 @@ interface AddressDao {
     @Query("SELECT * FROM addresses WHERE slug = :slug LIMIT 1")
     fun getAddressBySlug(slug: String): Flow<Address?>
 
+    @Query("SELECT * FROM addresses WHERE slug = :slug LIMIT 1")
+    suspend fun getAddressBySlugImmediate(slug: String): Address?
+
+    @Query("SELECT * FROM addresses")
+    suspend fun getAllAddressesImmediate(): List<Address>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(addresses: List<Address>)
 
