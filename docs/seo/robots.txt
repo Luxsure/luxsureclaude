@@ -1,0 +1,30 @@
+# robots.txt — www.luxsure.fr
+# Version corrigée du 2026-07-03 (voir docs/seo/AUDIT-INDEXATION-LUXSURE-2026-07.md)
+#
+# Changements vs version en ligne :
+#  1. Ligne Sitemap corrigée : l'ancienne (https://luxsure.fr/sitemap.xml) renvoie 404.
+#  2. Blocage des URL de partage Jetpack (?share=) et ?replytocom= : jamais destinées
+#     à l'index, elles gaspillent le budget d'exploration.
+#  3. Blocage des flux RSS secondaires (/tag/xxx/feed/, /category/xxx/feed/…),
+#     le flux principal /feed/ reste autorisé.
+# NB : ?utm_ et ?fbclid ne sont volontairement PAS bloqués (les balises canoniques,
+#     déjà en place, gèrent la consolidation des liens de campagnes).
+
+User-agent: *
+Allow: /wp-content/uploads/
+Disallow: /wp-admin/
+Disallow: /wp-includes/
+Disallow: /wp-content/plugins/
+Disallow: /wp-content/themes/
+Disallow: /xmlrpc.php
+Disallow: /?s=
+Disallow: /*?share=
+Disallow: /*?*share=
+Disallow: /*?replytocom=
+Disallow: /*?*replytocom=
+Disallow: /*/feed/
+Disallow: /*/feed/$
+Allow: /feed/$
+Allow: /wp-admin/admin-ajax.php
+
+Sitemap: https://www.luxsure.fr/sitemap_index.xml
