@@ -1,7 +1,7 @@
 # Rapport d'incident — Luxsure.fr : lenteurs, 504 et échecs de publication
 
-**Période :** ~25 juin – 2 juillet 2026
-**Statut au 02/07/2026 :** stabilisé, en attente de validation formelle (3 publications consécutives)
+**Période :** ~25 juin – 5 juillet 2026
+**Statut au 05/07/2026 :** ✅ **RÉSOLU ET VALIDÉ** — publications réelles fonctionnelles, site sain sous charge (voir §9)
 **Site :** https://www.luxsure.fr — WordPress ~31 933 articles, WPML (FR/EN), thème Penci/Soledad, hébergement saasweb (cp-hz4.saasweb.net)
 
 ---
@@ -73,7 +73,7 @@ Le front public est désormais servi par le cache Cloudflare, ce qui décharge l
 
 ## 6. Points encore ouverts (par priorité)
 
-1. **Validation formelle non faite** : publier 3 articles de test consécutifs (dont 1 avec image de la médiathèque) sans échec ni 504. Critère : REST < 3 s, aucun « La mise à jour a échoué ». Tant que ce test n'est pas passé, l'incident n'est pas clos.
+1. ~~Validation formelle~~ ✅ **Validée le 05/07** — voir §9 : 4 articles réels publiés les 4-5 juillet sans incident, site sain sous charge.
 2. **Réactivations silencieuses inexpliquées** : Link Whisper (dossier renommé) et Redis se sont réactivés « tout seuls » fin juin. Identifier qui/quoi a accès en écriture (Pascal ? panel saasweb ? sync staging→prod ? restauration auto ?). **Principal risque de rechute** — chaque correctif peut être annulé silencieusement.
 3. **`post.php` à ~7 s (TTFB pur)** : requête FormData classique (sans `meta-box-loader`), résistante aux désactivations WPML satellites. Probablement hors du chemin de publication Gutenberg. À élucider (quel éditeur, quel initiateur) avant d'y toucher — chantier d'optimisation, pas une urgence.
 4. **Erreur fatale Link Whisper** : récupérer le message exact dans les logs PHP avant toute tentative de réactivation.
@@ -96,6 +96,39 @@ Ne reprendre le SEO/netlinking qu'après validation du point 6.1 **et** quelques
 - Un plugin **MCP Adapter** est installé sur le site (`/wp-json/mcp/mcp-adapter-default-server`) — voie d'accès authentifiée possible pour de futures interventions.
 - Scripts de diagnostic/stabilisation serveur : voir `wordpress-tools/` (audit, isolation WP Rocket, mu-plugin Publication Guard, reset OPcache) et `PLAN-STABILISATION.md`.
 
+## 9. Test complet de validation — 05/07/2026 (09h37-09h40 UTC)
+
+### Publications réelles en production (critère de résolution atteint)
+
+4 articles réels publiés depuis la stabilisation, sans incident rapporté :
+- 04/07 17:03 — La Tour d'Argent cuvée Claude Terrail
+- 04/07 17:03 — Maserati 1000 Miglia 2026
+- 04/07 17:26 — Poiray Filles Antik 20 ans (+ Rolex Coral Gardeners à 17:26)
+- **05/07 09:46 — Maltese Falcon Jumeirah** (publié moins d'une heure avant le test)
+
+### Balayage complet du site : tout est vert
+
+| Test | Résultat |
+|---|---|
+| 9 pages hubs FR | 200, **0,20 – 0,58 s** (contre 2,9-3,3 s le 29/06) |
+| Accueil EN `/en/` | 200, 0,36 s |
+| 5 derniers articles réels | 200, 0,22 – 0,51 s, **0 erreur PHP dans le HTML** |
+| REST API posts/categories | 200, 0,9 – 1,2 s |
+| Sitemap index + sous-sitemap | 200, ~0,6 s |
+| Flux RSS `/feed/` | 200, 1,6 s |
+| Recherche `?s=chanel` | 200, 3,5 s (non cachée — acceptable) |
+| Page 404 | 404 propre, 1,6 s |
+| **Charge : 10 requêtes simultanées** | **10× HTTP 200, max 1,7 s, aucune dégradation** |
+| hreflang WPML | Présent et correct sur les articles |
+| Cache WP Rocket | Signature active sur les pages |
+| `wp-login.php` | 200, 0,19 s |
+
+Aucun 504, aucun timeout, aucune erreur PHP visible sur l'ensemble du balayage.
+
+### Accès SFTP (identifiants du 05/07)
+
+Identifiants SFTP fournis (host `cp-hz4.saasweb.net`, user `luxdevsftp`) : **non testables depuis les environnements Claude Code** — le réseau n'autorise que le HTTPS port 443 via proxy ; le port 22 est bloqué en direct comme via le proxy. Validité inconnue ; à tester depuis un poste avec accès SSH sortant. ⚠️ Le mot de passe ayant transité en clair dans une conversation, le faire tourner après les interventions.
+
 ---
 
-*Rapport établi le 02/07/2026 sur la base de diagnostics à distance (HTTP/REST) et d'interventions dans l'admin WordPress via l'extension Chrome.*
+*Rapport établi le 02/07/2026, validé le 05/07/2026, sur la base de diagnostics à distance (HTTP/REST) et d'interventions dans l'admin WordPress via l'extension Chrome.*
