@@ -6,17 +6,41 @@ export interface QuizQuestion {
   explanation: string;
 }
 
+export type LessonType =
+  | "theory"
+  | "practice"
+  | "interactive"
+  | "project"
+  | "battle";
+
+export const LESSON_TYPE_ICON: Record<LessonType, string> = {
+  theory: "📖",
+  practice: "⚡",
+  interactive: "🎮",
+  project: "🛠️",
+  battle: "⚔️",
+};
+
 export interface Lesson {
   id: string;
   title: string;
   duration: string;
   content: string;
   quiz?: QuizQuestion[];
+  xp?: number;
+  type?: LessonType;
+}
+
+export interface ModuleBadge {
+  title: string;
+  icon: string;
 }
 
 export interface Module {
   id: string;
   title: string;
+  icon?: string;
+  badge?: ModuleBadge;
   lessons: Lesson[];
 }
 
@@ -32,6 +56,8 @@ export interface Course {
   color: string;
   tags: string[];
   modules: Module[];
+  levelNumber?: number;
+  finalBadge?: ModuleBadge;
 }
 
 export const courses: Course[] = [
