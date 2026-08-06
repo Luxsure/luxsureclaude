@@ -62,6 +62,7 @@ create table public.courses (
   description text not null,
   long_description text not null default '',
   level text not null check (level in ('beginner', 'intermediate', 'advanced')),
+  level_number integer,
   duration text not null default '0h',
   icon text not null default '📖',
   color text not null default 'from-blue-500 to-cyan-500',
@@ -89,6 +90,9 @@ create table public.modules (
   id text primary key,
   course_id text not null references public.courses(id) on delete cascade,
   title text not null,
+  icon text,
+  badge_title text,
+  badge_icon text,
   "order" integer not null default 0,
   created_at timestamptz not null default now()
 );
@@ -112,6 +116,8 @@ create table public.lessons (
   title text not null,
   content_md text not null default '',
   duration text not null default '10 min',
+  xp integer not null default 10,
+  lesson_type text not null default 'theory' check (lesson_type in ('theory', 'practice', 'interactive', 'project', 'battle')),
   "order" integer not null default 0,
   media_urls text[] not null default '{}',
   is_free boolean not null default true,
