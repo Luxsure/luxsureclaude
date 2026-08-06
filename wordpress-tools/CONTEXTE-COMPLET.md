@@ -2,7 +2,45 @@
 
 > **But de ce fichier :** donner à une nouvelle conversation (Claude ou autre) tout le
 > contexte nécessaire pour reprendre le dossier sans repartir de zéro. À coller en début
-> de session. Dernière mise à jour : 05/07/2026.
+> de session. Dernière mise à jour : **06/08/2026**.
+
+---
+
+## 0bis. MISE À JOUR 06/08/2026 — 2e épisode (WP Rocket) + OPcache
+
+Après la résolution de l'épisode 1 (Sticky Links, juillet), de nouveaux 504 sont apparus.
+**Second déclencheur identifié : WP Rocket.**
+- ~50 tâches de préchargement tournaient quasi en continu, chacune sollicitant PHP 2–6 s ;
+- purge complète du cache toutes les 10 h ;
+- accueil + plusieurs catégories repurgés après chaque modification d'article.
+
+**Corrections appliquées :** préchargement désactivé, purge automatique 10 h supprimée,
+liste des URL systématiquement purgées vidée, tâche résiduelle de préchargement arrêtée.
+→ File passée d'environ **50 tâches à 5**, sans recréation du préchargement.
+
+**Reste ouvert — saturation OPcache côté serveur :**
+- mémoire OPcache **512/512 Mo** (pleine), chaînes internes **8/8 Mo** (pleines) ;
+- cache déclaré plein, efficacité ~80 % → **recompilation permanente des scripts** ;
+- `max_execution_time` **60 s**, cohérent avec les 504 observés.
+- ⚠️ Nuance : OPcache saturé **amplifie** la saturation PHP, ce n'est pas à soi seul
+  la cause des 504. C'est un facteur aggravant à corriger, pas l'unique coupable.
+
+**Vérification 06/08 18h46 UTC :** site 200 OK, accueil TTFB 0,39–0,97 s, hubs 0,55–2,1 s
+sous charge 8 requêtes simultanées, REST ~1 s. **3 articles réels publiés le 06/08**
+(16h15, 17h11, 17h25) → publication confirmée fonctionnelle en conditions réelles.
+À noter : `cf-cache-status` est repassé à `DYNAMIC` (conséquence normale de l'arrêt du
+préchargement — les pages se mettent en cache à la première visite au lieu d'être
+pré-générées). Acceptable vu les temps de réponse.
+
+### Réglages OPcache à demander à l'hébergeur (valeurs cibles)
+| Directive | Actuel | Cible conseillée |
+|---|---|---|
+| `opcache.memory_consumption` | 512 Mo (plein) | **1024 Mo** |
+| `opcache.interned_strings_buffer` | 8 Mo (plein) | **32 Mo** |
+| `opcache.max_accelerated_files` | à vérifier | **65407** minimum (site + WPML = beaucoup de fichiers) |
+| `opcache.validate_timestamps` / `revalidate_freq` | à vérifier | garder la validation, `revalidate_freq=60` |
+| `max_execution_time` | 60 s | à confirmer avec l'hébergeur |
+| `pm.max_children` PHP-FPM | inconnu | à vérifier + slow log |
 
 ---
 
