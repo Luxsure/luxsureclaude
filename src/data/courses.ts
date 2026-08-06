@@ -579,7 +579,23 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "theory",
             xp: 10,
-            content: `## Pourquoi les Projects changent la donne\n\nLes **Projects** de Claude permettent de regrouper des conversations autour d'un contexte partagé : documents de référence, instructions personnalisées et historique cohérent. Plutôt que de répéter le même contexte à chaque échange, vous le définissez une fois pour toutes.\n\n## Construire un system prompt efficace\n\nUn bon system prompt précise :\n- Le rôle attendu de Claude (expert marketing, relecteur juridique, etc.)\n- Le ton et le format de sortie souhaités\n- Les contraintes métier (vocabulaire interdit, structure imposée)\n- Les sources à privilégier parmi les documents joints\n\n## Contexte persistant\n\nChaque nouvelle conversation dans un Project hérite automatiquement des fichiers et instructions déjà chargés. Cela évite les pertes de contexte et garantit une cohérence de réponse sur la durée, particulièrement utile pour un usage en équipe.\n\n> 💡 Créez un Project dédié par client ou par projet récurrent : vous gagnerez un temps précieux sur le cadrage de chaque nouvelle conversation.`,
+            content: `## Pourquoi les Projects changent la donne
+
+Les **Projects** de Claude permettent de regrouper des conversations autour d'un contexte partagé : documents de référence, instructions personnalisées et historique cohérent. Plutôt que de répéter le même contexte à chaque échange, vous le définissez une fois pour toutes.
+
+## Construire un system prompt efficace
+
+Un bon system prompt précise :
+- Le rôle attendu de Claude (expert marketing, relecteur juridique, etc.)
+- Le ton et le format de sortie souhaités
+- Les contraintes métier (vocabulaire interdit, structure imposée)
+- Les sources à privilégier parmi les documents joints
+
+## Contexte persistant
+
+Chaque nouvelle conversation dans un Project hérite automatiquement des fichiers et instructions déjà chargés. Cela évite les pertes de contexte et garantit une cohérence de réponse sur la durée, particulièrement utile pour un usage en équipe.
+
+> 💡 Créez un Project dédié par client ou par projet récurrent : vous gagnerez un temps précieux sur le cadrage de chaque nouvelle conversation.`,
           },
           {
             id: "claude-artifacts",
@@ -587,7 +603,21 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "12 min",
             type: "practice",
             xp: 35,
-            content: `## Que sont les Artifacts ?\n\nLes **Artifacts** sont des espaces de travail séparés de la conversation où Claude génère du contenu autonome : code exécutable, documents structurés, diagrammes ou visualisations interactives. Contrairement à une réponse classique, un Artifact reste éditable et consultable indépendamment du fil de discussion.\n\n## Cas d'usage concrets\n\n- **Code** : composants React, scripts Python, pages HTML complètes testables en direct\n- **Documents** : rapports longs, tableaux de bord Markdown, présentations structurées\n- **Visualisations** : graphiques SVG, diagrammes Mermaid, tableaux de données interactifs\n\n## Bonnes pratiques\n\nDemandez explicitement une itération sur un Artifact existant plutôt que de relancer une nouvelle génération : Claude conserve la structure et applique uniquement vos modifications, ce qui est bien plus rapide qu'une réécriture complète.\n\n> 💡 Pour un prototype rapide, demandez un Artifact HTML autonome : vous obtenez un rendu visuel immédiat, sans configuration.`,
+            content: `## Que sont les Artifacts ?
+
+Les **Artifacts** sont des espaces de travail séparés de la conversation où Claude génère du contenu autonome : code exécutable, documents structurés, diagrammes ou visualisations interactives. Contrairement à une réponse classique, un Artifact reste éditable et consultable indépendamment du fil de discussion.
+
+## Cas d'usage concrets
+
+- **Code** : composants React, scripts Python, pages HTML complètes testables en direct
+- **Documents** : rapports longs, tableaux de bord Markdown, présentations structurées
+- **Visualisations** : graphiques SVG, diagrammes Mermaid, tableaux de données interactifs
+
+## Bonnes pratiques
+
+Demandez explicitement une itération sur un Artifact existant plutôt que de relancer une nouvelle génération : Claude conserve la structure et applique uniquement vos modifications, ce qui est bien plus rapide qu'une réécriture complète.
+
+> 💡 Pour un prototype rapide, demandez un Artifact HTML autonome : vous obtenez un rendu visuel immédiat, sans configuration.`,
           },
           {
             id: "claude-long-documents",
@@ -595,7 +625,22 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "practice",
             xp: 35,
-            content: `## Une fenêtre de contexte hors norme\n\nClaude peut traiter des documents dépassant 100 000 tokens en une seule requête, soit l'équivalent de plusieurs centaines de pages. Cela permet d'analyser un rapport annuel complet, un contrat multi-annexes ou plusieurs études en parallèle sans découpage manuel.\n\n## Méthode d'analyse efficace\n\n1. Chargez le document complet plutôt que des extraits fragmentés\n2. Demandez d'abord un résumé structuré pour valider la compréhension globale\n3. Posez ensuite des questions précises en référençant les sections identifiées\n4. Demandez des citations exactes pour vérifier chaque affirmation\n\n## Limites à connaître\n\nMême avec un grand contexte, la précision peut légèrement diminuer sur les informations situées au milieu d'un document très long. Segmentez si la fiabilité est critique (contrats juridiques, données financières).\n\n> 💡 Demandez toujours à Claude de citer la source exacte de ses réponses : cela réduit fortement le risque d'erreur d'interprétation.`,
+            content: `## Une fenêtre de contexte hors norme
+
+Claude peut traiter des documents dépassant 100 000 tokens en une seule requête, soit l'équivalent de plusieurs centaines de pages. Cela permet d'analyser un rapport annuel complet, un contrat multi-annexes ou plusieurs études en parallèle sans découpage manuel.
+
+## Méthode d'analyse efficace
+
+1. Chargez le document complet plutôt que des extraits fragmentés
+2. Demandez d'abord un résumé structuré pour valider la compréhension globale
+3. Posez ensuite des questions précises en référençant les sections identifiées
+4. Demandez des citations exactes pour vérifier chaque affirmation
+
+## Limites à connaître
+
+Même avec un grand contexte, la précision peut légèrement diminuer sur les informations situées au milieu d'un document très long. Segmentez si la fiabilité est critique (contrats juridiques, données financières).
+
+> 💡 Demandez toujours à Claude de citer la source exacte de ses réponses : cela réduit fortement le risque d'erreur d'interprétation.`,
           },
           {
             id: "claude-battle-chatgpt",
@@ -603,7 +648,25 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "15 min",
             type: "battle",
             xp: 50,
-            content: `## Le principe du battle\n\nCe module compare Claude et ChatGPT sur cinq situations professionnelles réelles : rédaction juridique, analyse de données, code, synthèse documentaire et brainstorming créatif. L'objectif n'est pas de désigner un vainqueur absolu, mais d'identifier les forces respectives de chaque outil.\n\n## Grille de comparaison\n\n| Cas métier | Point fort observé |\n|---|---|\n| Rédaction juridique | Claude : nuance et prudence |\n| Code complexe | Les deux performent, styles différents |\n| Analyse de données | ChatGPT : Code Interpreter intégré |\n| Synthèse longue | Claude : gestion du contexte étendu |\n| Brainstorming créatif | ChatGPT : diversité des idées |\n\n## Ce qu'il faut retenir\n\nAucun outil n'est universellement supérieur : le bon choix dépend de la tâche, du volume de contexte et du niveau de fiabilité exigé.\n\n> 💡 Testez systématiquement le même prompt sur les deux outils avant d'adopter un usage récurrent en entreprise.`,
+            content: `## Le principe du battle
+
+Ce module compare Claude et ChatGPT sur cinq situations professionnelles réelles : rédaction juridique, analyse de données, code, synthèse documentaire et brainstorming créatif. L'objectif n'est pas de désigner un vainqueur absolu, mais d'identifier les forces respectives de chaque outil.
+
+## Grille de comparaison
+
+| Cas métier | Point fort observé |
+|---|---|
+| Rédaction juridique | Claude : nuance et prudence |
+| Code complexe | Les deux performent, styles différents |
+| Analyse de données | ChatGPT : Code Interpreter intégré |
+| Synthèse longue | Claude : gestion du contexte étendu |
+| Brainstorming créatif | ChatGPT : diversité des idées |
+
+## Ce qu'il faut retenir
+
+Aucun outil n'est universellement supérieur : le bon choix dépend de la tâche, du volume de contexte et du niveau de fiabilité exigé.
+
+> 💡 Testez systématiquement le même prompt sur les deux outils avant d'adopter un usage récurrent en entreprise.`,
           },
         ],
       },
@@ -619,7 +682,23 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "12 min",
             type: "theory",
             xp: 10,
-            content: `## Qu'est-ce qu'un Custom GPT ?\n\nUn Custom GPT est une version personnalisée de ChatGPT configurée pour une tâche récurrente : instructions spécifiques, base de connaissances propre et actions externes optionnelles. Il se crée sans code, via le configurateur intégré.\n\n## Les éléments clés d'un bon Custom GPT\n\n- **Nom et description** clairs pour guider l'usage\n- **Instructions** détaillant le rôle, le ton et les limites\n- **Base de connaissances** : fichiers de référence uploadés\n- **Actions** : connexions à des API externes si nécessaire\n- **Conversation starters** pour guider les premiers usages\n\n## Cas d'usage typiques\n\nUn Custom GPT est idéal pour standardiser une tâche répétée en équipe : relecture de CV, génération de comptes-rendus selon un gabarit fixe, ou assistant support client basé sur une documentation interne.\n\n> 💡 Limitez la base de connaissances aux documents réellement utiles : trop de fichiers dilue la pertinence des réponses.`,
+            content: `## Qu'est-ce qu'un Custom GPT ?
+
+Un Custom GPT est une version personnalisée de ChatGPT configurée pour une tâche récurrente : instructions spécifiques, base de connaissances propre et actions externes optionnelles. Il se crée sans code, via le configurateur intégré.
+
+## Les éléments clés d'un bon Custom GPT
+
+- **Nom et description** clairs pour guider l'usage
+- **Instructions** détaillant le rôle, le ton et les limites
+- **Base de connaissances** : fichiers de référence uploadés
+- **Actions** : connexions à des API externes si nécessaire
+- **Conversation starters** pour guider les premiers usages
+
+## Cas d'usage typiques
+
+Un Custom GPT est idéal pour standardiser une tâche répétée en équipe : relecture de CV, génération de comptes-rendus selon un gabarit fixe, ou assistant support client basé sur une documentation interne.
+
+> 💡 Limitez la base de connaissances aux documents réellement utiles : trop de fichiers dilue la pertinence des réponses.`,
           },
           {
             id: "chatgpt-gpt-store",
@@ -627,7 +706,26 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "8 min",
             type: "interactive",
             xp: 10,
-            content: `## Explorer le GPT Store\n\nLe GPT Store référence des milliers de Custom GPTs créés par la communauté et par des entreprises partenaires, classés par catégorie : productivité, écriture, programmation, éducation, style de vie.\n\n## Comment évaluer un GPT avant de l'utiliser\n\n- Consultez le nombre de conversations et les avis\n- Vérifiez le nom du créateur (vérifié ou non)\n- Lisez la description pour confirmer le périmètre exact\n- Testez avec une question simple avant un usage critique\n\n## Configurer ses favoris\n\nÉpinglez les GPTs utilisés régulièrement pour y accéder en un clic depuis la barre latérale, plutôt que de les rechercher à chaque session.\n\n## Vigilance\n\nCertains GPTs tiers demandent l'accès à des données externes via des actions : vérifiez toujours quelles informations sont partagées avant validation.\n\n> 💡 Avant d'adopter un GPT métier en entreprise, testez-le sur un cas non sensible pour valider sa fiabilité.`,
+            content: `## Explorer le GPT Store
+
+Le GPT Store référence des milliers de Custom GPTs créés par la communauté et par des entreprises partenaires, classés par catégorie : productivité, écriture, programmation, éducation, style de vie.
+
+## Comment évaluer un GPT avant de l'utiliser
+
+- Consultez le nombre de conversations et les avis
+- Vérifiez le nom du créateur (vérifié ou non)
+- Lisez la description pour confirmer le périmètre exact
+- Testez avec une question simple avant un usage critique
+
+## Configurer ses favoris
+
+Épinglez les GPTs utilisés régulièrement pour y accéder en un clic depuis la barre latérale, plutôt que de les rechercher à chaque session.
+
+## Vigilance
+
+Certains GPTs tiers demandent l'accès à des données externes via des actions : vérifiez toujours quelles informations sont partagées avant validation.
+
+> 💡 Avant d'adopter un GPT métier en entreprise, testez-le sur un cas non sensible pour valider sa fiabilité.`,
           },
           {
             id: "chatgpt-canvas-code-interpreter",
@@ -635,7 +733,26 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "12 min",
             type: "practice",
             xp: 35,
-            content: `## Canvas : un espace de travail collaboratif\n\nCanvas ouvre un panneau dédié à côté de la conversation pour rédiger et éditer du texte ou du code de façon itérative. Vous pouvez sélectionner un passage précis et demander une modification ciblée, sans réécrire tout le document.\n\n## Code Interpreter pour l'analyse de données\n\nCette fonctionnalité permet d'uploader un fichier (CSV, Excel) et de demander directement des analyses : statistiques descriptives, graphiques, détection d'anomalies. ChatGPT exécute réellement du code Python en arrière-plan.\n\n## Workflow recommandé\n\n1. Uploadez le fichier de données\n2. Demandez un aperçu et un nettoyage des valeurs manquantes\n3. Posez des questions analytiques précises\n4. Demandez une visualisation adaptée au message à transmettre\n\n## Limites\n\nLes fichiers volumineux ou les analyses nécessitant des bibliothèques spécifiques non disponibles dans l'environnement peuvent échouer silencieusement.\n\n> 💡 Demandez toujours à voir le code généré avant de faire confiance aux résultats chiffrés produits.`,
+            content: `## Canvas : un espace de travail collaboratif
+
+Canvas ouvre un panneau dédié à côté de la conversation pour rédiger et éditer du texte ou du code de façon itérative. Vous pouvez sélectionner un passage précis et demander une modification ciblée, sans réécrire tout le document.
+
+## Code Interpreter pour l'analyse de données
+
+Cette fonctionnalité permet d'uploader un fichier (CSV, Excel) et de demander directement des analyses : statistiques descriptives, graphiques, détection d'anomalies. ChatGPT exécute réellement du code Python en arrière-plan.
+
+## Workflow recommandé
+
+1. Uploadez le fichier de données
+2. Demandez un aperçu et un nettoyage des valeurs manquantes
+3. Posez des questions analytiques précises
+4. Demandez une visualisation adaptée au message à transmettre
+
+## Limites
+
+Les fichiers volumineux ou les analyses nécessitant des bibliothèques spécifiques non disponibles dans l'environnement peuvent échouer silencieusement.
+
+> 💡 Demandez toujours à voir le code généré avant de faire confiance aux résultats chiffrés produits.`,
           },
           {
             id: "chatgpt-dalle3",
@@ -643,7 +760,26 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "practice",
             xp: 35,
-            content: `## Générer des visuels sans quitter la conversation\n\nDALL-E 3 est intégré nativement à ChatGPT : il suffit de décrire l'image souhaitée en langage naturel pour obtenir un rendu, sans changer d'outil ni d'interface.\n\n## Rédiger un bon prompt visuel\n\n- Précisez le style (photo réaliste, illustration, flat design)\n- Décrivez la composition et le cadrage\n- Indiquez la palette de couleurs si elle est importante\n- Mentionnez le contexte d'usage (bannière web, présentation, réseau social)\n\n## Itérer efficacement\n\nContrairement à un outil de génération d'image autonome, ChatGPT permet de demander des ajustements en langage naturel sur l'image précédente : « rends le fond plus clair », « change la position du personnage ».\n\n## Limite importante\n\nDALL-E 3 reste imprécis sur le texte intégré à l'image et les visages récurrents d'un personnage d'une génération à l'autre.\n\n> 💡 Décrivez toujours l'usage final de l'image : le modèle adapte automatiquement le style au contexte professionnel ou créatif.`,
+            content: `## Générer des visuels sans quitter la conversation
+
+DALL-E 3 est intégré nativement à ChatGPT : il suffit de décrire l'image souhaitée en langage naturel pour obtenir un rendu, sans changer d'outil ni d'interface.
+
+## Rédiger un bon prompt visuel
+
+- Précisez le style (photo réaliste, illustration, flat design)
+- Décrivez la composition et le cadrage
+- Indiquez la palette de couleurs si elle est importante
+- Mentionnez le contexte d'usage (bannière web, présentation, réseau social)
+
+## Itérer efficacement
+
+Contrairement à un outil de génération d'image autonome, ChatGPT permet de demander des ajustements en langage naturel sur l'image précédente : « rends le fond plus clair », « change la position du personnage ».
+
+## Limite importante
+
+DALL-E 3 reste imprécis sur le texte intégré à l'image et les visages récurrents d'un personnage d'une génération à l'autre.
+
+> 💡 Décrivez toujours l'usage final de l'image : le modèle adapte automatiquement le style au contexte professionnel ou créatif.`,
           },
         ],
       },
@@ -659,7 +795,25 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "theory",
             xp: 10,
-            content: `## Deep Research : la recherche autonome\n\nDeep Research permet à Gemini Advanced d'explorer le web de façon autonome pendant plusieurs minutes, en consultant des dizaines de sources avant de produire un rapport structuré et sourcé sur un sujet donné.\n\n## Quand l'utiliser\n\n- Étude de marché ou veille concurrentielle approfondie\n- Synthèse d'un sujet technique émergent\n- Préparation d'un dossier nécessitant des sources multiples et récentes\n\n## Raisonnement étendu\n\nLe mode de raisonnement étendu de Gemini alloue davantage de temps de calcul avant de répondre, ce qui améliore la qualité sur les problèmes mathématiques, logiques ou de planification complexe.\n\n## Différence avec une recherche classique\n\nUne recherche web classique retourne des liens à explorer soi-même ; Deep Research produit directement une synthèse argumentée avec citations, proche d'un travail de recherche préliminaire.\n\n> 💡 Réservez Deep Research aux sujets qui justifient plusieurs minutes d'attente : pour une question simple, une recherche standard suffit.`,
+            content: `## Deep Research : la recherche autonome
+
+Deep Research permet à Gemini Advanced d'explorer le web de façon autonome pendant plusieurs minutes, en consultant des dizaines de sources avant de produire un rapport structuré et sourcé sur un sujet donné.
+
+## Quand l'utiliser
+
+- Étude de marché ou veille concurrentielle approfondie
+- Synthèse d'un sujet technique émergent
+- Préparation d'un dossier nécessitant des sources multiples et récentes
+
+## Raisonnement étendu
+
+Le mode de raisonnement étendu de Gemini alloue davantage de temps de calcul avant de répondre, ce qui améliore la qualité sur les problèmes mathématiques, logiques ou de planification complexe.
+
+## Différence avec une recherche classique
+
+Une recherche web classique retourne des liens à explorer soi-même ; Deep Research produit directement une synthèse argumentée avec citations, proche d'un travail de recherche préliminaire.
+
+> 💡 Réservez Deep Research aux sujets qui justifient plusieurs minutes d'attente : pour une question simple, une recherche standard suffit.`,
           },
           {
             id: "gemini-workspace",
@@ -667,7 +821,28 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "12 min",
             type: "theory",
             xp: 10,
-            content: `## Gemini intégré à Google Workspace\n\nGemini s'intègre directement dans Docs, Sheets, Slides et Gmail, permettant de générer et modifier du contenu sans quitter l'application de travail habituelle.\n\n## Usages par application\n\n| Application | Usage principal |\n|---|---|\n| Docs | Rédaction, reformulation, résumé de document |\n| Sheets | Formules, analyse de données, génération de tableaux |\n| Slides | Création de présentations à partir d'un brief texte |\n| Gmail | Rédaction et résumé de fils d'échange longs |\n\n## Avantage clé\n\nComme Gemini a accès au contenu du document ouvert, il peut proposer des modifications contextualisées sans que vous ayez à recopier le contenu dans une conversation séparée.\n\n## Point de vigilance\n\nLa qualité des réponses dans Sheets dépend fortement de la structure des données : des colonnes bien nommées améliorent nettement la pertinence des formules générées.\n\n> 💡 Dans Sheets, décrivez le résultat attendu plutôt que la formule technique : Gemini traduit lui-même en syntaxe adaptée.`,
+            content: `## Gemini intégré à Google Workspace
+
+Gemini s'intègre directement dans Docs, Sheets, Slides et Gmail, permettant de générer et modifier du contenu sans quitter l'application de travail habituelle.
+
+## Usages par application
+
+| Application | Usage principal |
+|---|---|
+| Docs | Rédaction, reformulation, résumé de document |
+| Sheets | Formules, analyse de données, génération de tableaux |
+| Slides | Création de présentations à partir d'un brief texte |
+| Gmail | Rédaction et résumé de fils d'échange longs |
+
+## Avantage clé
+
+Comme Gemini a accès au contenu du document ouvert, il peut proposer des modifications contextualisées sans que vous ayez à recopier le contenu dans une conversation séparée.
+
+## Point de vigilance
+
+La qualité des réponses dans Sheets dépend fortement de la structure des données : des colonnes bien nommées améliorent nettement la pertinence des formules générées.
+
+> 💡 Dans Sheets, décrivez le résultat attendu plutôt que la formule technique : Gemini traduit lui-même en syntaxe adaptée.`,
           },
           {
             id: "gemini-ai-studio",
@@ -675,7 +850,25 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "practice",
             xp: 35,
-            content: `## Google AI Studio, l'environnement de test\n\nGoogle AI Studio est une interface gratuite permettant de tester les différents modèles Gemini (Flash, Pro) avec un contrôle fin des paramètres : température, longueur de réponse, system instructions.\n\n## Comparer les modèles\n\n- **Gemini Flash** : rapide et économique, idéal pour du volume\n- **Gemini Pro** : raisonnement plus poussé pour les tâches complexes\n- Testez le même prompt sur plusieurs modèles pour comparer qualité et latence\n\n## Fonctionnalités utiles\n\nAI Studio permet aussi de tester des entrées multimodales (image, audio, vidéo) et d'exporter directement le code d'intégration API correspondant à la configuration testée.\n\n## Pour qui ?\n\nCet outil s'adresse autant aux non-développeurs souhaitant comparer des modèles avant un choix d'outil, qu'aux équipes techniques préparant une intégration API.\n\n> 💡 Ajustez le paramètre de température à zéro pour des tâches factuelles, et plus haut pour des tâches créatives.`,
+            content: `## Google AI Studio, l'environnement de test
+
+Google AI Studio est une interface gratuite permettant de tester les différents modèles Gemini (Flash, Pro) avec un contrôle fin des paramètres : température, longueur de réponse, system instructions.
+
+## Comparer les modèles
+
+- **Gemini Flash** : rapide et économique, idéal pour du volume
+- **Gemini Pro** : raisonnement plus poussé pour les tâches complexes
+- Testez le même prompt sur plusieurs modèles pour comparer qualité et latence
+
+## Fonctionnalités utiles
+
+AI Studio permet aussi de tester des entrées multimodales (image, audio, vidéo) et d'exporter directement le code d'intégration API correspondant à la configuration testée.
+
+## Pour qui ?
+
+Cet outil s'adresse autant aux non-développeurs souhaitant comparer des modèles avant un choix d'outil, qu'aux équipes techniques préparant une intégration API.
+
+> 💡 Ajustez le paramètre de température à zéro pour des tâches factuelles, et plus haut pour des tâches créatives.`,
           },
           {
             id: "gemini-nano-banana-2",
@@ -683,7 +876,27 @@ Un **biais algorithmique** se produit quand un système d'IA produit des résult
             duration: "10 min",
             type: "practice",
             xp: 35,
-            content: `## Nano Banana 2 : génération d'images native\n\nNano Banana 2 est le modèle de génération et d'édition d'image intégré à Gemini, reconnu pour sa cohérence visuelle sur plusieurs générations successives et sa capacité à éditer une image existante par instruction textuelle.\n\n## Points forts\n\n- Conservation fidèle d'un personnage ou d'un style sur plusieurs images\n- Édition ciblée : modifier un élément précis sans régénérer toute l'image\n- Bonne gestion du texte intégré dans les visuels\n\n## Workflow recommandé\n\n1. Générez une première image de base\n2. Affinez par itérations successives avec des instructions précises\n3. Demandez des variantes en conservant les éléments validés\n\n## Cas d'usage professionnels\n\nVisuels marketing cohérents sur une campagne, mockups produits, illustrations pour présentation interne.\n\n> 💡 Pour garder la cohérence d'un personnage ou d'un produit, réutilisez toujours l'image précédente comme référence plutôt que de repartir d'un prompt texte seul.`,
+            content: `## Nano Banana 2 : génération d'images native
+
+Nano Banana 2 est le modèle de génération et d'édition d'image intégré à Gemini, reconnu pour sa cohérence visuelle sur plusieurs générations successives et sa capacité à éditer une image existante par instruction textuelle.
+
+## Points forts
+
+- Conservation fidèle d'un personnage ou d'un style sur plusieurs images
+- Édition ciblée : modifier un élément précis sans régénérer toute l'image
+- Bonne gestion du texte intégré dans les visuels
+
+## Workflow recommandé
+
+1. Générez une première image de base
+2. Affinez par itérations successives avec des instructions précises
+3. Demandez des variantes en conservant les éléments validés
+
+## Cas d'usage professionnels
+
+Visuels marketing cohérents sur une campagne, mockups produits, illustrations pour présentation interne.
+
+> 💡 Pour garder la cohérence d'un personnage ou d'un produit, réutilisez toujours l'image précédente comme référence plutôt que de repartir d'un prompt texte seul.`,
           },
         ],
       },
