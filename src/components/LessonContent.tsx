@@ -29,7 +29,9 @@ export function LessonContent({ lesson, course }: LessonContentProps) {
         {completed && (
           <div className="mb-6 flex items-center gap-2 rounded-lg bg-success/10 border border-success/20 px-4 py-2">
             <span className="text-success">✓</span>
-            <span className="text-sm text-success">Leçon terminée — +50 XP</span>
+            <span className="text-sm text-success">
+              Leçon terminée — +{lesson.xp ?? 50} XP
+            </span>
           </div>
         )}
         <MarkdownRenderer content={lesson.content} />

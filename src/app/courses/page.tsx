@@ -56,6 +56,11 @@ export default function CoursesPage() {
               <div className="mb-4 flex items-start justify-between">
                 <span className="text-4xl">{course.icon}</span>
                 <div className="flex items-center gap-2">
+                  {course.levelNumber != null && (
+                    <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+                      Niveau {course.levelNumber}
+                    </span>
+                  )}
                   <span
                     className={`rounded-full px-3 py-1 text-xs font-medium ${
                       course.level === "Débutant"

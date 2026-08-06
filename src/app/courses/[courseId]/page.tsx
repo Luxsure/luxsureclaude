@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getCourse } from "@/data/courses";
+import { getCourse, LESSON_TYPE_ICON } from "@/data/courses";
 
 interface Props {
   params: Promise<{ courseId: string }>;
@@ -44,6 +44,11 @@ export default async function CourseDetailPage({ params }: Props) {
           <div className="flex-1">
             <div className="mb-4 flex items-center gap-3">
               <span className="text-5xl">{course.icon}</span>
+              {course.levelNumber != null && (
+                <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+                  Niveau {course.levelNumber}
+                </span>
+              )}
               <span
                 className={`rounded-full px-3 py-1 text-xs font-medium ${
                   course.level === "Débutant"
@@ -55,6 +60,11 @@ export default async function CourseDetailPage({ params }: Props) {
               >
                 {course.level}
               </span>
+              {course.finalBadge && (
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary-light">
+                  🏅 {course.finalBadge.title}
+                </span>
+              )}
             </div>
 
             <h1 className="mb-4 text-3xl font-extrabold md:text-4xl">
@@ -106,17 +116,24 @@ export default async function CourseDetailPage({ params }: Props) {
               className="rounded-2xl border border-border bg-card overflow-hidden"
             >
               <div className="bg-card-hover p-5 border-b border-border">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-sm font-bold text-primary-light">
-                    {modIndex + 1}
-                  </span>
-                  <div>
-                    <h3 className="font-bold text-foreground">{mod.title}</h3>
-                    <p className="text-xs text-zinc-500">
-                      {mod.lessons.length} leçon
-                      {mod.lessons.length > 1 ? "s" : ""}
-                    </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-sm font-bold text-primary-light">
+                      {modIndex + 1}
+                    </span>
+                    <div>
+                      <h3 className="font-bold text-foreground">{mod.title}</h3>
+                      <p className="text-xs text-zinc-500">
+                        {mod.lessons.length} leçon
+                        {mod.lessons.length > 1 ? "s" : ""}
+                      </p>
+                    </div>
                   </div>
+                  {mod.badge && (
+                    <span className="shrink-0 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary-light">
+                      {mod.badge.icon} {mod.badge.title}
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -128,7 +145,7 @@ export default async function CourseDetailPage({ params }: Props) {
                     className="flex items-center gap-4 p-4 transition-colors hover:bg-card-hover group"
                   >
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border text-xs text-zinc-500 group-hover:border-primary/50 group-hover:text-primary-light transition-colors">
-                      {lessonIndex + 1}
+                      {lesson.type ? LESSON_TYPE_ICON[lesson.type] : lessonIndex + 1}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-foreground group-hover:text-primary-light transition-colors truncate">
@@ -139,6 +156,11 @@ export default async function CourseDetailPage({ params }: Props) {
                       {lesson.quiz && (
                         <span className="rounded-md bg-accent/10 px-2 py-0.5 text-xs text-accent">
                           Quiz
+                        </span>
+                      )}
+                      {lesson.xp != null && (
+                        <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary-light">
+                          +{lesson.xp} XP
                         </span>
                       )}
                       <span className="text-xs text-zinc-600">
