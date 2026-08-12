@@ -1,0 +1,580 @@
+/* ==========================================================================
+   LUXSURE — Surcouche d'affinage · v2 · PROPOSITION (non publiée)
+   --------------------------------------------------------------------------
+   S'AJOUTE à la surcouche v1 déjà en production : ce fichier se colle À LA
+   SUITE du CSS additionnel existant, il ne le remplace pas. Aucune règle de
+   v1 n'est supprimée ; quand v2 corrige une valeur de v1, c'est écrit.
+
+   PRINCIPE DIRECTEUR DE CETTE VERSION
+   v1 travaillait contre le thème, à coups de « !important ». v2 travaille
+   AVEC lui : Soledad expose ses propres jetons de design en variables CSS,
+   consommés par plusieurs centaines de ses règles.
+
+       --pcaccent-cl   421 règles du thème
+       --pcborder-cl   172 règles
+       --pcheading-cl  166 règles
+       --pcmeta-cl      30 règles
+
+   Redéfinir ces quatre variables sur le body suffit à harmoniser d'un coup
+   des centaines de détails que v1 devait viser un par un — et le jour où
+   Soledad ajoute un module, il naît déjà à la bonne couleur.
+
+   PORTÉE ET RÉVERSIBILITÉ — inchangées
+   Préfixe « body.wp-theme-soledad » partout. Aucune règle ne masque de
+   contenu à l'écran (la seule exception, assumée et signalée, est le bloc
+   @media print en fin de feuille). Pour couper : remplacer le préfixe par
+   « body.lx-off ». Pour retirer : supprimer ce bloc, v1 reste intacte.
+
+   CE QUI NE PEUT PAS SE FAIRE ICI
+   Quatre corrections importantes relèvent des réglages du thème, pas du CSS.
+   Elles sont listées dans le rapport joint (carrousel de Une affiché sur les
+   articles, libellés restés en anglais, image de Une masquée sur l'article,
+   couleur d'accent du Customizer). Le CSS ne doit pas les rattraper.
+   ========================================================================== */
+
+
+/* ── 10. JETONS ────────────────────────────────────────────────────────────
+   Deux familles : les jetons Luxsure (--lx-*), et les jetons natifs du thème
+   (--pc*) que l'on ré-accorde.
+
+   Le « :not(.pcdm-enable) » laisse le mode sombre de Soledad intact : il
+   définit ses propres valeurs sur body.pcdm-enable, à spécificité égale ;
+   sans cette précaution, notre bloc, arrivant plus tard, l'écraserait. */
+body.wp-theme-soledad:not(.pcdm-enable) {
+
+  /* Correction de v1 — accessibilité.
+     v1 posait --lx-mute à #7C776F, soit 4,44:1 sur blanc : juste sous le
+     seuil AA de 4,5:1, alors que ce ton sert les métadonnées, les légendes
+     et le pied de page, tous en petit corps. #6E6A63 monte à 5,38:1 sans
+     changer la valeur perçue. */
+  --lx-mute: #6E6A63;
+
+  /* Filets. Le thème n'a qu'un gris froid, #dedede. On installe deux
+     valeurs : un filet de structure (bronze très dilué, pour les ruptures
+     de chapitre) et un filet de liste, neutre chaud. */
+  --lx-rule:      rgba(122, 98, 72, .30);
+  --lx-rule-soft: #E8E3DB;
+
+  /* Rythme vertical. L'accueil enchaîne douze modules à intervalle
+     rigoureusement constant (58 px de section + 60 px de contenu = 118 px).
+     Une page de magazine ne respire pas au métronome : trois valeurs. */
+  --lx-gap-chapter: 104px;   /* rupture : avant un nouvel ensemble */
+  --lx-gap-module:   72px;   /* courant : d'un module au suivant   */
+  --lx-gap-inner:    28px;   /* interne : titre → contenu          */
+
+  /* --- Jetons natifs Soledad, ré-accordés ------------------------------- */
+
+  /* Accent. Réglé sur #616161 dans le Customizer : un gris. C'est lui qui
+     colore les survols, les états actifs, la pagination, les puces, le fond
+     des étiquettes au survol. Passé au bronze Luxsure, 5,72:1 sur blanc,
+     lisible même en petit corps.
+     À TERME : poser cette valeur directement dans le Customizer (Soledad ›
+     couleur d'accent) et retirer cette ligne — même résultat, sans CSS. */
+  --pcaccent-cl: #7A6248;
+
+  /* Filets du thème : #dedede (gris froid) → gris chaud accordé au papier. */
+  --pcborder-cl: #E8E3DB;
+
+  /* Encre des titres : #313131 → #1A1A1A, l'encre de la charte. */
+  --pcheading-cl: #1A1A1A;
+
+  /* Métadonnées : #888888 = 3,54:1 sur blanc. Sous le seuil AA, sur du 12 px.
+     C'est le seul vrai défaut d'accessibilité relevé sur le site. */
+  --pcmeta-cl: #6E6A63;
+}
+
+
+/* ── 11. FILETS ────────────────────────────────────────────────────────────
+   Le thème code encore #dedede en dur dans une cinquantaine de règles, hors
+   variable. On reprend celles qui sont visibles sur l'accueil, l'article et
+   les rubriques. */
+body.wp-theme-soledad .home-featured-cat-content.style-10 .mag-post-box.first-post,
+body.wp-theme-soledad .home-featured-cat-content.style-2 .mag-post-box.first-post,
+body.wp-theme-soledad .home-featured-cat-content.style-6 .cat-right .mag-post-box,
+body.wp-theme-soledad .penci-grid li.list-post,
+body.wp-theme-soledad .penci_recent-posts-sc ul.side-newsfeed li,
+body.wp-theme-soledad .tags-share-box,
+body.wp-theme-soledad .post-pagination,
+body.wp-theme-soledad .post-related,
+body.wp-theme-soledad .post-comments .post-title-box,
+body.wp-theme-soledad .comments .comment,
+body.wp-theme-soledad h3.comment-reply-title {
+  border-color: var(--lx-rule-soft) !important;
+}
+
+/* Deux traits décoratifs qui traversent les métadonnées de grille : ils
+   coupent la lecture pour rien. On les laisse en place — rien n'est masqué —
+   mais au niveau d'un filet, pas d'une barre. */
+body.wp-theme-soledad .penci-post-box-meta.penci-post-box-grid:before,
+body.wp-theme-soledad .grid-post-box-meta span:after {
+  background: var(--lx-rule-soft) !important;
+}
+
+/* Titre de rubrique en style 10 : filet supérieur de 3 px, gris anthracite.
+   Un filet de magazine se voit sans peser : 1 px bronze. */
+body.wp-theme-soledad .penci-homepage-title.style-10,
+body.wp-theme-soledad .penci-sidebar-content.style-10 .penci-border-arrow {
+  border-top: 1px solid var(--lx-rule) !important;
+  border-bottom: 0 !important;
+}
+
+
+/* ── 12. RYTHME VERTICAL DE L'ACCUEIL ──────────────────────────────────────
+   Douze modules à 118 px d'intervalle constant : l'œil ne sait pas où
+   commence un ensemble. On resserre l'intervalle courant et on garde l'air
+   pour les vraies ruptures — après la Une, et avant le fil des derniers
+   articles. La page raccourcit d'environ 400 px sans rien perdre. */
+   Attention au point de pose : l'espace qui sépare deux modules est le
+   padding bas de la SECTION. La marge basse de .home-featured-cat-content,
+   elle, tombe entre la dernière carte et le lien « voir tout » — la régler
+   n'écarte pas les modules, elle disloque le module. */
+body.wp-theme-soledad .home-featured-cat { padding-bottom: var(--lx-gap-module); }
+body.wp-theme-soledad .home-featured-cat .home-featured-cat-content {
+  margin-bottom: 34px !important;   /* 60 px dans le thème : le « voir tout » flottait */
+}
+
+/* Rupture de chapitre après le premier module — celui qui fait la Une. */
+body.wp-theme-soledad .home-featured-cat:first-of-type { padding-bottom: var(--lx-gap-chapter); }
+
+/* Rupture avant le fil « derniers articles », qui change de registre :
+   on quitte les rubriques éditorialisées pour la chronologie. */
+body.wp-theme-soledad .penci-homepage-title.penci-home-latest-posts {
+  margin-top: var(--lx-gap-chapter) !important;
+}
+
+/* Titre de rubrique → contenu : le filet doit tenir le titre, pas flotter. */
+body.wp-theme-soledad .penci-border-arrow.penci-homepage-title,
+body.wp-theme-soledad .penci-homepage-title.penci-magazine-title {
+  margin-bottom: var(--lx-gap-inner) !important;
+  border-top-color: var(--lx-rule) !important;
+}
+
+/* « Voir tout » : posé à droite, en folio de bas de module, il ferme
+   l'ensemble au lieu de le prolonger. */
+body.wp-theme-soledad .penci-featured-cat-seemore {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  text-align: right;
+}
+body.wp-theme-soledad .penci-featured-cat-seemore a { border-bottom-color: var(--lx-rule); }
+
+
+/* ── 13. HIÉRARCHIE DE LA UNE ──────────────────────────────────────────────
+   Les douze modules ont le même poids typographique : la page n'a pas de
+   première page. Le module d'ouverture prend un cran de plus — un seul,
+   c'est ce qui distingue une hiérarchie d'un empilement de tailles. */
+body.wp-theme-soledad .home-featured-cat:first-of-type .mag-post-box.first-post .magcat-titlte a {
+  font-size: 27px !important;
+  line-height: 1.2 !important;
+}
+body.wp-theme-soledad .home-featured-cat:first-of-type .mag-post-box.first-post .entry-excerpt {
+  font-size: 16px !important;
+}
+
+/* Les titres de cartes se cassent souvent sur un mot isolé : équilibrage. */
+body.wp-theme-soledad .magcat-titlte a,
+body.wp-theme-soledad .penci-entry-title a,
+body.wp-theme-soledad article .entry-title a,
+body.wp-theme-soledad .featured-area .feat-text h3 a { text-wrap: balance; }
+body.wp-theme-soledad .entry-excerpt,
+body.wp-theme-soledad .penci-post-excerpt,
+body.wp-theme-soledad .item-content { text-wrap: pretty; }
+
+
+/* ── 14. CARROUSEL DE UNE — finition ───────────────────────────────────────
+   v1 a réglé la lisibilité (voile dégradé, serif blanc). Restent trois
+   détails de fabrication. */
+
+/* 1. Les flèches n'apparaissaient qu'au survol : sur écran tactile, elles
+      n'apparaissent jamais. Le carrousel semblait figé sur mobile. */
+@media (hover: none) {
+  body.wp-theme-soledad .featured-area .owl-prev,
+  body.wp-theme-soledad .featured-area .owl-next { opacity: .9; }
+}
+
+/* 2. Le titre de Une reste à 21 px jusqu'en 1600 px de large : il flotte
+      dans l'image sur grand écran. */
+@media (min-width: 1280px) {
+  body.wp-theme-soledad .featured-area .feat-text h3 a { font-size: 23px !important; }
+}
+
+/* 3. Fond d'attente d'image : le gris froid #f5f5f5 du thème tranche sur le
+      papier. Un gris chaud passe inaperçu pendant le chargement. */
+body.wp-theme-soledad .penci-image-holder { background-color: #F1EEE9; }
+
+
+/* ── 15. BLOC MAGAZINE (accueil) ───────────────────────────────────────────
+   Le bloc « Découvrir l'édition digitale / Commander l'édition papier » est
+   posé en dur dans la page, avec sa propre feuille de style. Elle appelle
+   « Söhne », qui n'est chargée nulle part sur le site : les deux liens
+   tombent en Arial, seule zone du site à ne pas être en Poppins. */
+body.wp-theme-soledad .lx-home-magazine-promo__actions,
+body.wp-theme-soledad .lx-home-magazine-promo__link {
+  font-family: var(--lx-ui) !important;
+}
+body.wp-theme-soledad .lx-home-magazine-promo__actions { border-top-color: var(--lx-rule) !important; }
+/* Le lien « commander » mérite d'être l'accent de la page. */
+body.wp-theme-soledad .lx-home-magazine-promo__link--buy { color: var(--lx-bronze) !important; }
+
+
+/* ── 16. EN-TÊTE ET NAVIGATION ─────────────────────────────────────────────
+   L'en-tête tient en 267 px, dont un bandeau « TOP POSTS » sur pastille
+   noire, puis la navigation, puis le logo. La pastille noire est l'élément
+   le plus contrasté de la page : elle capte l'œil avant le logo. */
+body.wp-theme-soledad .penci-top-bar {
+  background-color: #FAFAF7 !important;   /* #f5f5f5 dans le thème : gris froid */
+  border-bottom: 1px solid var(--lx-rule-soft);
+}
+body.wp-theme-soledad .headline-title {
+  background-color: transparent !important;   /* pastille #111111 dans le thème */
+  color: var(--lx-bronze) !important;
+  font-family: var(--lx-ui) !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: .16em !important;
+  text-transform: uppercase !important;
+}
+body.wp-theme-soledad a.penci-topbar-post-title {
+  font-family: var(--lx-serif) !important;
+  font-size: 14px !important;
+  color: var(--lx-body) !important;
+}
+body.wp-theme-soledad a.penci-topbar-post-title:hover { color: var(--lx-bronze) !important; }
+
+/* Filet de fermeture sous tout le bloc de tête — barre, menu et logo. Posé
+   sous le menu seul, il aurait encadré le menu et coupé le logo du reste ;
+   posé sous l'ensemble, il donne au bandeau de titre son bord de manchette. */
+body.wp-theme-soledad .penci-header-wrap { border-bottom: 1px solid var(--lx-rule-soft); }
+
+/* Soulignement bronze animé sur les entrées de menu — la signature de
+   mouvement Luxsure, la seule de la feuille. */
+body.wp-theme-soledad #navigation .menu > li > a { position: relative; }
+body.wp-theme-soledad #navigation .menu > li > a:after {
+  content: "";
+  position: absolute;
+  left: 11px; right: 11px; bottom: 8px;
+  height: 1px;
+  background: var(--lx-bronze);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform .32s var(--lx-ease);
+}
+body.wp-theme-soledad #navigation .menu > li > a:hover:after,
+body.wp-theme-soledad #navigation .menu > li.current-menu-item > a:after { transform: scaleX(1); }
+
+
+/* ── 17. ARTICLE — colonne et progression ──────────────────────────────────
+   v1 a posé la mesure de 720 px sur le corps. Mais le pied d'article
+   (étiquettes, partage, navigation) est resté sur 1170 px : les filets
+   dépassent la colonne de texte de 225 px de chaque côté, et l'article
+   semble se disloquer à la fin.
+
+   Le partage à droite est en position absolue et la navigation
+   précédent/suivant tient sur deux colonnes avec vignettes : les rétrécir à
+   720 px les casse (essayé, vérifié). La règle retenue est donc une frontière
+   plutôt qu'un alignement général : la colonne de lecture s'arrête aux
+   étiquettes, et tout ce qui suit est une sortie de lecture pleine largeur,
+   annoncée par un filet bronze. */
+body.wp-theme-soledad .container-single .post-tags,
+body.wp-theme-soledad .container-single .penci-single-link-pages {
+  max-width: var(--lx-measure);
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* La sortie de lecture : partage, navigation, articles liés. */
+body.wp-theme-soledad .container-single .tags-share-box {
+  border-top: 1px solid var(--lx-rule) !important;
+  margin-top: 36px !important;
+}
+body.wp-theme-soledad .post-related {
+  border-top: 1px solid var(--lx-rule-soft) !important;
+  margin-top: 24px !important;
+}
+
+/* Titre du chapeau de l'article : un filet le sépare du corps, comme le
+   filet de folio d'une double page. */
+body.wp-theme-soledad .penci-single-pheader .single-header {
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--lx-rule);
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+/* Progression de lecture — un filet bronze de 2 px en haut de fenêtre, qui
+   avance avec le défilement. Aucun JavaScript : animation pilotée par le
+   défilement (CSS scroll-driven animations). Les navigateurs qui ne la
+   connaissent pas n'affichent simplement rien.
+   Uniquement sur article : la règle est portée par .container-single. */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.wp-theme-soledad .container-single:before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 2px;
+      z-index: 9;
+      background: var(--lx-bronze);
+      transform: scaleX(0);
+      transform-origin: left center;
+      animation: lx-lecture linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+@keyframes lx-lecture { to { transform: scaleX(1); } }
+
+
+/* ── 18. ARTICLE — pied de page ────────────────────────────────────────────
+   Étiquettes, partage, précédent/suivant et articles liés forment
+   aujourd'hui quatre blocs de poids égal, tous en gris #888, tous cadrés
+   différemment. On les hiérarchise sans rien retirer. */
+
+/* Étiquettes : des chips à bord gris froid → filets chauds, casse naturelle
+   conservée telle que le thème la produit. */
+body.wp-theme-soledad .container-single .post-entry .post-tags a {
+  font-family: var(--lx-ui) !important;
+  font-size: 10px !important;
+  letter-spacing: .12em !important;
+  color: var(--lx-soft) !important;
+  border: 1px solid var(--lx-rule-soft) !important;
+  border-radius: 0 !important;
+  padding: 7px 12px !important;
+  transition: border-color .3s var(--lx-ease), color .3s var(--lx-ease);
+}
+body.wp-theme-soledad .container-single .post-entry .post-tags a:hover {
+  background: transparent !important;
+  color: var(--lx-bronze) !important;
+  border-color: var(--lx-bronze) !important;
+}
+
+/* Barre de partage : huit réseaux, un compteur de « like » et un compteur de
+   commentaires, tous au même niveau que le texte. On baisse le volume — le
+   contenu reste, il cesse de crier. */
+body.wp-theme-soledad .tags-share-box,
+body.wp-theme-soledad .tags-share-box a,
+body.wp-theme-soledad .tags-share-box span {
+  font-family: var(--lx-ui) !important;
+  font-size: 10px !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  color: var(--lx-mute) !important;
+}
+body.wp-theme-soledad .tags-share-box a:hover { color: var(--lx-bronze) !important; }
+body.wp-theme-soledad .tags-share-box .penci-faicon { font-size: 13px !important; }
+
+/* Précédent / suivant : les titres passent en serif, les libellés en folio. */
+body.wp-theme-soledad .post-pagination .prev-title,
+body.wp-theme-soledad .post-pagination .next-title {
+  font-family: var(--lx-serif) !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -.01em !important;
+  color: var(--lx-ink) !important;
+  text-transform: none !important;
+}
+body.wp-theme-soledad .post-pagination .prev-post-title span {
+  font-family: var(--lx-ui) !important;
+  font-size: 10px !important;
+  letter-spacing: .16em !important;
+  color: var(--lx-mute) !important;
+}
+
+/* Articles liés : le titre de bloc en serif, casse naturelle, et les titres
+   d'articles alignés sur le reste du site. */
+body.wp-theme-soledad .post-related .post-box-title,
+body.wp-theme-soledad .post-comments .post-box-title {
+  font-family: var(--lx-serif) !important;
+  font-size: 22px !important;
+  font-weight: 400 !important;
+  letter-spacing: -.012em !important;
+  text-transform: none !important;
+  color: var(--lx-ink) !important;
+}
+body.wp-theme-soledad .post-related .related-content h3 a {
+  font-family: var(--lx-serif) !important;
+  font-size: 17px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  color: var(--lx-ink) !important;
+}
+body.wp-theme-soledad .post-related .related-content .date,
+body.wp-theme-soledad .post-related .related-content time {
+  font-family: var(--lx-ui) !important;
+  font-size: 10px !important;
+  letter-spacing: .13em !important;
+  text-transform: uppercase !important;
+  color: var(--lx-mute) !important;
+}
+
+
+/* ── 19. RUBRIQUES ET ARCHIVES ─────────────────────────────────────────────
+   Mêmes filets, même rythme que l'accueil. */
+body.wp-theme-soledad .archive-box { margin-bottom: var(--lx-gap-module); }
+body.wp-theme-soledad .penci-grid li.list-post { padding-bottom: 36px; margin-bottom: 36px; }
+body.wp-theme-soledad .penci-pagination a:hover,
+body.wp-theme-soledad .penci-pagination .page-numbers.current { color: var(--lx-bronze) !important; }
+
+
+/* ── 20. DÉTAILS DE FOND ───────────────────────────────────────────────────
+   Ce que personne ne remarque, et qui fait la différence entre un thème
+   acheté et une maison. */
+
+/* La sélection de texte est bleu système sur tout le site. */
+body.wp-theme-soledad ::selection { background: rgba(122, 98, 72, .20); color: var(--lx-ink); }
+
+/* Les liens du corps d'article ouvrant un nouvel onglet, les liens de
+   widget et de pied de page reprennent l'accent bronze via --pcaccent-cl.
+   Ici, seulement l'état de survol, pour la cohérence du geste. */
+body.wp-theme-soledad .widget a:hover,
+body.wp-theme-soledad .footer-menu a:hover,
+body.wp-theme-soledad .footer-socials a:hover { color: var(--lx-bronze) !important; }
+
+/* Pied de page : un filet et de l'air, pour qu'il close la page au lieu de
+   s'y accrocher. */
+body.wp-theme-soledad .penci-footer-social-media { border-top: 1px solid var(--lx-rule-soft); }
+body.wp-theme-soledad .footer-logo-copyright { padding-top: 26px; }
+
+/* Cibles tactiles : les icônes de partage et les étiquettes font moins de
+   44 px de haut sur mobile, seuil en deçà duquel on rate sa cible. */
+@media (max-width: 767px) {
+  body.wp-theme-soledad .tags-share-box .post-share-item,
+  body.wp-theme-soledad .container-single .post-entry .post-tags a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
+
+/* ── 21. MOBILE ────────────────────────────────────────────────────────────
+   Le rythme de l'accueil doit se resserrer avec la largeur, sinon la page
+   devient un couloir. */
+@media (max-width: 767px) {
+  body.wp-theme-soledad:not(.pcdm-enable) {
+    --lx-gap-chapter: 64px;
+    --lx-gap-module:  46px;
+    --lx-gap-inner:   20px;
+  }
+  body.wp-theme-soledad .penci-single-pheader .single-header { padding-bottom: 20px; }
+  body.wp-theme-soledad .home-featured-cat:first-of-type .mag-post-box.first-post .magcat-titlte a {
+    font-size: 22px !important;
+  }
+  body.wp-theme-soledad .post-related .related-content h3 a,
+  body.wp-theme-soledad .post-pagination .prev-title,
+  body.wp-theme-soledad .post-pagination .next-title { font-size: 16px !important; }
+}
+
+
+/* ── 22. IMPRESSION ────────────────────────────────────────────────────────
+   Seule entorse assumée à la règle « rien n'est masqué » : à l'impression,
+   la navigation, le carrousel et les boutons de partage ne servent à rien et
+   coûtent de l'encre. Un article de Luxsure s'imprime en article, pas en
+   capture d'écran. Rien de tout cela n'affecte l'affichage. */
+@media print {
+  body.wp-theme-soledad .penci-header-wrap,
+  body.wp-theme-soledad .featured-area,
+  body.wp-theme-soledad .tags-share-box,
+  body.wp-theme-soledad .post-related,
+  body.wp-theme-soledad .post-pagination,
+  body.wp-theme-soledad .penci-go-to-top-floating,
+  body.wp-theme-soledad .penci-footer-social-media { display: none !important; }
+
+  body.wp-theme-soledad .container-single .post-entry .inner-post-entry > * { max-width: 100%; }
+  body.wp-theme-soledad .container-single .post-entry p { font-size: 11pt !important; line-height: 1.5 !important; color: #000 !important; }
+  body.wp-theme-soledad .single-post-title { font-size: 24pt !important; }
+  body.wp-theme-soledad .container-single .post-entry a { box-shadow: none !important; }
+}
+
+
+/* ==========================================================================
+   23. VARIANTES À VALIDER — désactivées
+   --------------------------------------------------------------------------
+   Quatre partis pris plus marqués. Ils ne sont pas dans la proposition de
+   base parce qu'ils engagent le registre du site, pas seulement sa finition.
+   Chacun s'active en retirant les marques de commentaire du bloc.
+   Les quatre sont visibles côte à côte dans la page d'essai fournie.
+   ========================================================================== */
+
+/* VARIANTE A — Lettrine d'ouverture
+   Une lettrine bronze sur trois lignes au deuxième paragraphe (le premier
+   est déjà le chapô). Geste de magazine, gratuit en performance.
+   Réserve : sur un article dont le deuxième paragraphe s'ouvre par un
+   guillemet ou un chiffre, la lettrine tombe mal. À l'usage, on saura.
+
+body.wp-theme-soledad .container-single .post-entry .inner-post-entry > p:nth-of-type(2)::first-letter {
+  float: left;
+  font-family: var(--lx-serif);
+  font-size: 3.55em;
+  line-height: .84;
+  font-weight: 400;
+  color: var(--lx-bronze);
+  padding: .06em .1em 0 0;
+}
+*/
+
+/* VARIANTE B — Citation sans filet gauche
+   v1 pose un filet bronze de 2 px à gauche des citations. L'ADN Luxsure s'en
+   méfie (le « border-left coloré » est un tic de blog). Version alternative :
+   pas de bord, retrait, filet court au-dessus — la citation devient un
+   intertitre respirant plutôt qu'un encadré.
+
+body.wp-theme-soledad .container-single .post-entry blockquote {
+  border-left: 0 !important;
+  padding: 26px 0 0 !important;
+  margin: 2.6em auto !important;
+  position: relative;
+}
+body.wp-theme-soledad .container-single .post-entry blockquote:after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 56px; height: 1px;
+  background: var(--lx-bronze);
+}
+*/
+
+/* VARIANTE C — Révélations au défilement
+   Les modules de l'accueil montent de 12 px en apparaissant. Sans
+   JavaScript, sans bibliothèque : animation pilotée par le défilement.
+   Le contenu reste visible par défaut dans tout navigateur qui ne connaît
+   pas la propriété, et l'animation est désactivée si le visiteur a demandé
+   moins de mouvement.
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    body.wp-theme-soledad .home-featured-cat {
+      animation: lx-monte .7s var(--lx-ease) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 42%;
+    }
+  }
+}
+@keyframes lx-monte { from { opacity: 0; transform: translateY(12px); } }
+*/
+
+/* VARIANTE D — Bande sombre de respiration
+   Un module de l'accueil sur fond Crème Nuit, à mi-page : la rupture que
+   douze modules blancs n'ont pas. Réglé ici sur le cinquième module ;
+   changer le nombre dans « :nth-of-type(5) » pour le déplacer.
+   Volontairement contenu dans la largeur du site : une pleine largeur en
+   100vw provoque un débordement horizontal dès qu'une barre de défilement
+   est présente, et le site n'en a aujourd'hui aucun.
+
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) {
+  background: var(--lx-night, #1F1B16);
+  padding: 56px 34px 8px;
+  margin-bottom: var(--lx-gap-chapter);
+}
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .penci-homepage-title h3 a,
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .magcat-titlte a,
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .penci-entry-title a {
+  color: #FAFAF7 !important;
+}
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .entry-excerpt { color: #C9C2B7 !important; }
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .penci-cat-name,
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .penci-featured-cat-seemore a { color: #C4A882 !important; }
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .penci-border-arrow.penci-homepage-title,
+body.wp-theme-soledad .home-featured-cat:nth-of-type(5) .mag-post-box { border-color: rgba(196, 168, 130, .30) !important; }
+*/

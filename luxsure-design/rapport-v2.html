@@ -1,0 +1,391 @@
+<title>Surcouche Luxsure v2</title>
+<style>
+/* ── Jetons ─────────────────────────────────────────────────────────────
+   Charte Luxsure éditoriale. Les fontes de la charte (Lyon, Söhne) ne sont
+   pas diffusables ici : on emploie les substituts déclarés par l'ADN
+   (Georgia pour le serif, sans-serif système pour la signalétique). */
+:root {
+  --paper:   #FAFAF7;
+  --ink:     #1A1A1A;
+  --body:    #2B2B2B;
+  --soft:    #55524D;
+  --mute:    #6E6A63;
+  --bronze:  #7A6248;
+  --rule:    rgba(122, 98, 72, .28);
+  --rule-soft: #E3DED5;
+  --night:   #1F1B16;
+
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --ui: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  --measure: 34rem;
+  --gap-section: clamp(3.5rem, 7vw, 6rem);
+}
+:root:not([data-theme="light"]) {
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:  #1F1B16;
+    --ink:    #F4F1EA;
+    --body:   #E2DCD1;
+    --soft:   #BEB6A8;
+    --mute:   #9C9488;
+    --bronze: #C4A882;
+    --rule:   rgba(196, 168, 130, .34);
+    --rule-soft: #3A342C;
+    --night:  #100E0B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper:  #1F1B16;
+  --ink:    #F4F1EA;
+  --body:   #E2DCD1;
+  --soft:   #BEB6A8;
+  --mute:   #9C9488;
+  --bronze: #C4A882;
+  --rule:   rgba(196, 168, 130, .34);
+  --rule-soft: #3A342C;
+  --night:  #100E0B;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--body);
+  font-family: var(--serif);
+  font-size: 1.0625rem;
+  line-height: 1.68;
+  -webkit-font-smoothing: antialiased;
+}
+.page {
+  max-width: 61rem;
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.25rem, 5vw, 3.5rem) 6rem;
+}
+
+/* ── Signalétique ─────────────────────────────────────────────────────── */
+.folio {
+  font-family: var(--ui);
+  font-size: .625rem;
+  font-weight: 500;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--bronze);
+}
+.meta {
+  font-family: var(--ui);
+  font-size: .6875rem;
+  letter-spacing: .1em;
+  color: var(--mute);
+}
+
+/* ── Titre ────────────────────────────────────────────────────────────── */
+header.masthead { border-bottom: 1px solid var(--rule); padding-bottom: 1.75rem; }
+h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 5.2vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -.022em;
+  color: var(--ink);
+  text-wrap: balance;
+  margin: .9rem 0 .6rem;
+}
+.chapo {
+  max-width: var(--measure);
+  font-size: 1.1875rem;
+  line-height: 1.62;
+  color: var(--ink);
+  text-wrap: pretty;
+  margin: 0;
+}
+.masthead .meta { margin-top: 1.25rem; display: block; }
+
+section { margin-top: var(--gap-section); }
+h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(1.45rem, 3vw, 1.95rem);
+  line-height: 1.16;
+  letter-spacing: -.016em;
+  color: var(--ink);
+  text-wrap: balance;
+  margin: 0 0 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1.1875rem;
+  letter-spacing: -.01em;
+  color: var(--ink);
+  margin: 0 0 .35rem;
+}
+p { max-width: var(--measure); text-wrap: pretty; }
+strong { font-weight: 600; color: var(--ink); }
+code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: .8em;
+  color: var(--bronze);
+  word-break: break-word;
+}
+a { color: var(--ink); text-decoration: none; box-shadow: inset 0 -1px 0 0 var(--rule); }
+a:hover { color: var(--bronze); box-shadow: inset 0 -1px 0 0 var(--bronze); }
+a:focus-visible { outline: 2px solid var(--bronze); outline-offset: 3px; box-shadow: none; }
+
+/* ── Relevé chiffré ───────────────────────────────────────────────────── */
+.releve {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+  gap: 1px;
+  background: var(--rule-soft);
+  border-block: 1px solid var(--rule-soft);
+  margin-top: 2rem;
+}
+.releve div { background: var(--paper); padding: 1.1rem 1.2rem 1.2rem; }
+.releve b {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: .45rem;
+}
+.releve span { font-family: var(--ui); font-size: .6875rem; line-height: 1.45; letter-spacing: .04em; color: var(--mute); display: block; }
+
+/* ── Listes de constats : des filets, pas des cartouches ──────────────── */
+.releves { margin: 0; padding: 0; list-style: none; }
+.releves > li {
+  display: grid;
+  grid-template-columns: 4.5rem 1fr;
+  gap: 0 1.5rem;
+  padding: 1.4rem 0;
+  border-top: 1px solid var(--rule-soft);
+}
+.releves > li:last-child { border-bottom: 1px solid var(--rule-soft); }
+.releves .rang { font-family: var(--ui); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; padding-top: .35rem; }
+.rang.bloq { color: #A2442E; }
+.rang.derive { color: var(--bronze); }
+.rang.detail { color: var(--mute); }
+:root[data-theme="dark"] .rang.bloq { color: #E08A6E; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rang.bloq { color: #E08A6E; } }
+.releves p { margin: .35rem 0 0; max-width: 46rem; color: var(--soft); font-size: 1rem; }
+.releves .fix { color: var(--body); }
+.releves .fix::before { content: "→ "; color: var(--bronze); }
+
+/* ── Tableau ──────────────────────────────────────────────────────────── */
+.tablewrap { overflow-x: auto; margin-top: 1.5rem; }
+table { border-collapse: collapse; width: 100%; min-width: 30rem; }
+th, td { text-align: left; padding: .7rem 1.2rem .7rem 0; border-bottom: 1px solid var(--rule-soft); font-size: .95rem; }
+th { font-family: var(--ui); font-size: .625rem; font-weight: 500; letter-spacing: .16em; text-transform: uppercase; color: var(--mute); }
+td.n { font-variant-numeric: tabular-nums; color: var(--ink); }
+
+/* ── Encart sombre ────────────────────────────────────────────────────── */
+.encart {
+  background: var(--night);
+  color: #E2DCD1;
+  padding: clamp(1.6rem, 4vw, 2.4rem);
+  margin-top: 2rem;
+}
+.encart h3, .encart strong { color: #FAFAF7; }
+.encart p { color: #C9C2B7; max-width: 44rem; }
+.encart .folio { color: #C4A882; }
+.encart code { color: #C4A882; }
+
+.notes { color: var(--soft); }
+.notes li { margin-bottom: .5rem; max-width: var(--measure); }
+footer { margin-top: var(--gap-section); padding-top: 1.25rem; border-top: 1px solid var(--rule); }
+</style>
+
+<div class="page">
+
+<header class="masthead">
+  <span class="folio">luxsure.fr · thème Soledad 8.7.5 · surcouche CSS</span>
+  <h1>Le second passage</h1>
+  <p class="chapo">La v1 a réglé la typographie. Ce qu'il reste tient en trois mots : la couleur d'accent, le rythme et la fin de l'article. Rien n'a été touché en production — tout est dans deux pages d'essai.</p>
+  <span class="meta">12 août 2026 · proposition à valider</span>
+</header>
+
+<section>
+  <h2>Ce qui a été fait</h2>
+  <p>J'ai relevé la page d'accueil et une page d'article telles qu'elles sont servies aujourd'hui, avec la surcouche v1 en place, puis je les ai rejouées dans un navigateur pour mesurer au lieu d'estimer. La proposition qui suit s'appuie sur ces mesures, pas sur une impression.</p>
+  <div class="releve">
+    <div><b>4</b><span>réglages du thème à changer — hors CSS, ce sont les plus lourds</span></div>
+    <div><b>1</b><span>défaut d'accessibilité avéré : les métadonnées à 3,54:1</span></div>
+    <div><b>789</b><span>règles du thème pilotées par quatre variables que l'on peut ré-accorder</span></div>
+    <div><b>4</b><span>variantes plus engagées, à valider ou à écarter</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>D'abord, ce que le CSS ne doit pas rattraper</h2>
+  <p>Quatre corrections relèvent des réglages de Soledad. Les traiter en CSS reviendrait à masquer du contenu ou à réécrire des libellés depuis la feuille de style : deux choses qu'une surcouche ne doit jamais faire. Elles sont classées par ce qu'elles coûtent au lecteur.</p>
+
+  <ul class="releves">
+    <li>
+      <span class="rang bloq">Bloquant</span>
+      <div>
+        <h3>Le carrousel de Une s'affiche aussi sur les articles</h3>
+        <p>Un lecteur qui ouvre un article traverse plus de 700 px de carrousel — trois autres articles, en grand — avant d'atteindre le fil d'Ariane et le titre de celui qu'il a choisi. Mesuré à 1440 px de large. C'est l'écart le plus coûteux du site : on propose autre chose à quelqu'un qui vient de choisir.</p>
+        <p class="fix">Réglages du thème → zone « Featured Area » : la restreindre à la page d'accueil.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang bloq">Bloquant</span>
+      <div>
+        <h3>Sept libellés restent en anglais</h3>
+        <p><code>View All</code> sur douze modules de l'accueil, <code>Related Articles</code>, <code>previous post</code>, <code>next post</code>, <code>0 comments</code>, le <code>by</code> des signatures, <code>TOP POSTS</code> en tête de page. Sur un magazine français, c'est la marque qui bafouille.</p>
+        <p class="fix">Soledad › Translation, ou Loco Translate. Un quart d'heure, une fois pour toutes.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang derive">Dérive</span>
+      <div>
+        <h3>La couleur d'accent du thème est un gris</h3>
+        <p><code>#616161</code> est réglé dans le Customizer. C'est lui qui colore les survols, les états actifs, la pagination, le fond des étiquettes : 421 règles du thème le consomment. Le site n'a donc pas d'accent — il a une absence d'accent, répétée partout.</p>
+        <p class="fix">Poser le bronze <code>#7A6248</code> dans le Customizer. La surcouche v2 le fait déjà par CSS ; le faire à la source permettra de retirer cette ligne.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang derive">Dérive</span>
+      <div>
+        <h3>L'image de Une est masquée sur les articles</h3>
+        <p>Le corps du <code>&lt;body&gt;</code> porte <code>penci-hide-pthumb</code> : l'article s'ouvre sur du texte seul. Pour un magazine dont la photo est la matière première, c'est une porte d'entrée sans vitrine — et la photo existe, elle est déjà servie aux réseaux sociaux.</p>
+        <p class="fix">Réglages de l'article : réafficher l'image de Une, en pleine largeur au-dessus du titre.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Le levier : parler au thème dans sa langue</h2>
+  <p>La v1 travaillait contre Soledad, à coups de <code>!important</code>, en visant les sélecteurs un par un. Or le thème expose ses propres jetons de design en variables CSS, et les consomme partout. Les redéfinir sur le <code>body</code> suffit à corriger d'un geste ce que la v1 devait poursuivre règle après règle — et le jour où Soledad ajoute un module, celui-ci naît déjà à la bonne couleur.</p>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr><th>Variable du thème</th><th>Valeur actuelle</th><th class="n">Règles</th><th>Proposition</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>--pcaccent-cl</code></td><td>#616161 · gris</td><td class="n">421</td><td>#7A6248 · bronze</td></tr>
+        <tr><td><code>--pcborder-cl</code></td><td>#dedede · gris froid</td><td class="n">172</td><td>#E8E3DB · filet chaud</td></tr>
+        <tr><td><code>--pcheading-cl</code></td><td>#313131</td><td class="n">166</td><td>#1A1A1A · encre de la charte</td></tr>
+        <tr><td><code>--pcmeta-cl</code></td><td>#888888 · 3,54:1</td><td class="n">30</td><td>#6E6A63 · 5,38:1</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p style="margin-top:1.6rem">Le dernier point n'est pas cosmétique. <strong>#888888 sur blanc donne 3,54:1</strong>, sous le seuil AA de 4,5:1, et c'est le ton des dates, des signatures, des légendes et du pied de page — tous en petit corps. C'est le seul vrai défaut d'accessibilité du site. Au passage, la v1 elle-même visait 4,44:1 sur ses métadonnées : v2 corrige aussi cette valeur-là.</p>
+</section>
+
+<section>
+  <h2>Ce que change la surcouche v2</h2>
+
+  <ul class="releves">
+    <li>
+      <span class="rang detail">Accueil</span>
+      <div>
+        <h3>Un rythme, au lieu d'un métronome</h3>
+        <p>Douze modules se succèdent à intervalle rigoureusement constant : 118 px, du premier au dernier. L'œil ne sait pas où commence un ensemble. La v2 installe trois valeurs — 104 px après la Une, 72 px entre modules, 104 px avant le fil des derniers articles — et resserre l'espace qui flottait entre la dernière carte et le lien « voir tout ».</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang detail">Accueil</span>
+      <div>
+        <h3>Une première page</h3>
+        <p>Les douze modules ont aujourd'hui le même poids typographique : la page d'accueil n'a pas de Une. Le module d'ouverture prend un cran de plus — un seul, c'est ce qui sépare une hiérarchie d'un empilement de tailles. Le « voir tout » passe à droite, en folio de bas de module.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang detail">En-tête</span>
+      <div>
+        <h3>La pastille noire cède le pas au logo</h3>
+        <p>Le bandeau « TOP POSTS » est posé sur un aplat <code>#111111</code> : c'est l'élément le plus contrasté de la page, et il capte l'œil avant la marque. Il devient un folio bronze sur papier, le titre défilant passe en serif, et un filet ferme l'ensemble sous le logo.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang detail">Article</span>
+      <div>
+        <h3>La fin de l'article cesse de se disloquer</h3>
+        <p>La v1 a ramené le texte à 720 px. Le pied d'article, lui, est resté sur 1170 px : les filets débordent la colonne de 225 px de chaque côté. La v2 pose une frontière plutôt qu'un alignement uniforme — la colonne de lecture s'arrête aux étiquettes, puis un filet bronze ouvre une sortie de lecture pleine largeur : partage, navigation, articles liés, tous rendus à leur juste volume.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang detail">Article</span>
+      <div>
+        <h3>Une barre de progression sans une ligne de JavaScript</h3>
+        <p>Un filet bronze de 2 px en haut de fenêtre, qui avance avec la lecture. Il s'appuie sur les animations pilotées par le défilement, natives dans les navigateurs récents ; ailleurs, il ne s'affiche simplement pas, et il se retire de lui-même si le visiteur a demandé moins de mouvement.</p>
+      </div>
+    </li>
+    <li>
+      <span class="rang detail">Partout</span>
+      <div>
+        <h3>Les finitions qu'on ne remarque pas</h3>
+        <p>Sélection de texte en bronze plutôt qu'en bleu système, équilibrage des titres de cartes qui se cassaient sur un mot isolé, fond d'attente d'image chaud au lieu du gris froid, flèches du carrousel visibles sur écran tactile — elles n'apparaissaient qu'au survol, donc jamais sur mobile —, cibles tactiles portées à 44 px, et une feuille d'impression pour que les articles s'impriment en articles.</p>
+      </div>
+    </li>
+  </ul>
+</section>
+
+<section>
+  <h2>Quatre partis pris, à valider séparément</h2>
+  <p>Ceux-là engagent le registre du site, pas seulement sa finition. Ils sont livrés désactivés, et se testent d'un clic dans les pages d'essai.</p>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Variante</th><th>Ce qu'elle fait</th><th>La réserve</th></tr></thead>
+      <tbody>
+        <tr><td><strong>A · Lettrine</strong></td><td>Lettrine bronze sur trois lignes au deuxième paragraphe</td><td>Tombe mal si le paragraphe s'ouvre par un guillemet ou un chiffre</td></tr>
+        <tr><td><strong>B · Citation</strong></td><td>Retire le filet gauche des citations au profit d'un filet court au-dessus</td><td>Aucune — c'est un retour à la charte, le filet gauche est un tic de blog</td></tr>
+        <tr><td><strong>C · Révélations</strong></td><td>Les modules de l'accueil montent de 12 px en apparaissant</td><td>Du mouvement sur une page qui n'en demandait pas</td></tr>
+        <tr><td><strong>D · Bande sombre</strong></td><td>Un module sur fond Crème Nuit, à mi-page</td><td>Le geste le plus fort du lot ; il faut aimer la rupture</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>Comment essayer</h2>
+  <p>Deux fichiers, <code>essai-accueil.html</code> et <code>essai-article.html</code>, à ouvrir dans le navigateur. Ce sont les vraies pages du site, avec leur vrai contenu et leurs vraies feuilles de style, servies depuis luxsure.fr — seule la surcouche est ajoutée par-dessus.</p>
+  <ul class="notes">
+    <li>Un panneau en bas à droite bascule <strong>avant / après</strong>. La barre d'espace fait la même chose.</li>
+    <li>Les quatre variantes s'activent par case à cocher, séparément ou ensemble.</li>
+    <li>Les carrousels sont figés en ligne : la page d'essai est servie sans le JavaScript du thème, pour que ce que l'on juge soit bien le CSS.</li>
+    <li>Rien de ce que fait cette page ne touche au site. Elle est locale.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Mise en production, le jour venu</h2>
+  <div class="encart">
+    <span class="folio">Marche à suivre</span>
+    <h3 style="margin-top:.7rem">Coller à la suite, jamais à la place</h3>
+    <p>Le contenu de <code>luxsure-surcouche-v2.css</code> se colle <strong>à la fin</strong> du champ <em>Apparence › Personnaliser › CSS additionnel</em>, sous la v1 qui reste intacte. Puis purger WP Rocket — sans quoi rien ne bouge et l'on conclut à tort que la feuille ne fonctionne pas.</p>
+    <p><strong>Pour couper :</strong> remplacer <code>body.wp-theme-soledad</code> par <code>body.lx-off</code> dans le bloc v2 — tout redevient v1, instantanément. <strong>Pour retirer :</strong> supprimer le bloc. WordPress conserve de toute façon les révisions du CSS additionnel.</p>
+    <p>Vérifié sans débordement horizontal ni erreur de console à 1440, 1024, 768 et 390 px, sur l'accueil comme sur l'article.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Ce que j'ai écarté</h2>
+  <ul class="notes">
+    <li><strong>Masquer le carrousel sur les articles en CSS.</strong> C'était la correction la plus rapide, et elle est interdite : une surcouche qui peut faire disparaître du contenu finira par en faire disparaître par accident. Ça reste un réglage du thème.</li>
+    <li><strong>Harmoniser les proportions d'images.</strong> Je les croyais disparates ; mesure faite, elles sont déjà toutes en 3:2. Rien à corriger.</li>
+    <li><strong>Une bande pleine largeur en <code>100vw</code>.</strong> Elle provoque un débordement horizontal dès qu'une barre de défilement apparaît. La variante D reste contenue dans la largeur du site.</li>
+    <li><strong>Rétrécir le partage et la navigation à 720 px.</strong> Essayé : les vignettes précédent/suivant se cassent et le partage, positionné en absolu, se décale. D'où la frontière plutôt que l'alignement.</li>
+    <li><strong>Toucher à la mesure de 720 px.</strong> Elle a été décidée en v1, elle tient. On ne rouvre pas.</li>
+  </ul>
+</section>
+
+<footer>
+  <span class="meta">Luxsure · surcouche d'affinage v2 · proposition, rien n'est en production</span>
+</footer>
+
+</div>
