@@ -49,3 +49,41 @@ Ces corrections ne doivent pas être rattrapées en CSS (voir le rapport) :
 Rendu et mesuré dans Chromium sur les pages réelles du site, à 1440, 1024, 768 et
 390 px, accueil et article : aucun débordement horizontal, aucune erreur de console,
 jetons du thème correctement repris.
+
+## Installer (collage manuel — 4 étapes)
+
+Le champ visé est `custom_css[soledad]` : *Apparence › Personnaliser › CSS
+additionnel*. Ce n'est pas le champ `custom_css` du cœur de WordPress ; aucune
+API ne l'écrit de façon fiable, le collage passe par le Customizer.
+
+1. Ouvrir le Customizer, se placer à la **fin** du CSS additionnel existant.
+2. Coller `A-COLLER-a-la-suite.css` (26 000 caractères). La v1 reste au-dessus,
+   intacte, blocs `@font-face` Newsreader compris.
+   *Variante :* si l'on préfère remplacer tout le champ d'un bloc, utiliser
+   `CHAMP-COMPLET-v1-plus-v2.css` — à ne faire que si le champ n'a pas été
+   modifié depuis le relevé du 12 août 2026, sinon la modification serait perdue.
+3. **Publier**, puis attendre et revérifier : `wp.customize.state('saved')` peut
+   renvoyer `false` juste après le clic.
+4. **Purger WP Rocket.** Sans cela, rien ne change à l'écran.
+
+### Vérifier après coup
+
+- Les survols de menu, la pagination et les étiquettes passent au bronze
+  (`#7A6248`) : la variable d'accent du thème est bien reprise.
+- Les dates et signatures ne sont plus `#888888` mais `#6E6A63`.
+- Sur l'accueil, l'espace après le premier module est plus large que les autres.
+- Sur un article, un filet bronze avance en haut de fenêtre au défilement.
+- Le bandeau « TOP POSTS » n'est plus une pastille noire.
+
+### Couper sans rien effacer
+
+Remplacer `body.wp-theme-soledad` par `body.lx-off` dans le seul bloc v2 : le
+site revient à la v1 instantanément. WordPress conserve par ailleurs les
+révisions du CSS additionnel.
+
+### Contrôles passés sur les deux fichiers
+
+Feuilles analysées par le navigateur (`sheet.cssRules`), pas seulement relues :
+60 règles pour la v2, 124 pour le champ complet, **aucune** hors du préfixe
+`body.wp-theme-soledad`, les 6 `@font-face` Newsreader préservés, et aucune
+règle masquant du contenu en dehors du bloc `@media print`.
