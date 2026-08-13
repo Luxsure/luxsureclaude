@@ -748,10 +748,17 @@ body.wp-theme-soledad a.penci-topbar-post-title {
 }
 body.wp-theme-soledad a.penci-topbar-post-title:hover { color: var(--lx-bronze) !important; }
 
-/* Filet de fermeture sous tout le bloc de tête — barre, menu et logo. Posé
-   sous le menu seul, il aurait encadré le menu et coupé le logo du reste ;
-   posé sous l'ensemble, il donne au bandeau de titre son bord de manchette. */
-body.wp-theme-soledad .penci-header-wrap { border-bottom: 1px solid var(--lx-rule-soft); }
+/* Filet de fermeture sous le bloc de tête — barre, menu, logo, réseaux.
+
+   PIÈGE, corrigé après coup : ce filet était d'abord posé sur
+   .penci-header-wrap, le conteneur de l'ensemble. Or son dernier enfant,
+   .penci-header-second, porte une marge basse de 60 px qui sortait de la
+   boîte parente par fusion des marges. Ajouter une bordure au parent bloque
+   cette fusion : la boîte a absorbé les 60 px et le filet est allé se poser
+   55 px plus bas, en travers du carrousel — une barre beige sur toute la
+   largeur de la page. Posé sur .penci-header-second, il s'arrête au bord
+   réel de l'en-tête, au-dessus de la respiration. */
+body.wp-theme-soledad header.penci-header-second { border-bottom: 1px solid var(--lx-rule-soft); }
 
 /* Soulignement bronze animé sur les entrées de menu — la signature de
    mouvement Luxsure, la seule de la feuille. */
@@ -939,8 +946,12 @@ body.wp-theme-soledad .footer-menu a:hover,
 body.wp-theme-soledad .footer-socials a:hover { color: var(--lx-bronze) !important; }
 
 /* Pied de page : un filet et de l'air, pour qu'il close la page au lieu de
-   s'y accrocher. */
+   s'y accrocher. Deux éléments portent la classe .penci-footer-social-media
+   — la rangée de réseaux « déplacée », puis le pied lui-même — et se suivent
+   immédiatement : sans la seconde règle, le filet se dédoublait, deux traits
+   à 1 px d'écart. Le filet reste sur le premier des deux, quel qu'il soit. */
 body.wp-theme-soledad .penci-footer-social-media { border-top: 1px solid var(--lx-rule-soft); }
+body.wp-theme-soledad .penci-footer-social-moved + #footer-section { border-top: 0; }
 body.wp-theme-soledad .footer-logo-copyright { padding-top: 26px; }
 
 /* Cibles tactiles : les icônes de partage et les étiquettes font moins de
