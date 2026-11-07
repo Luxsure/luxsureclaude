@@ -37,11 +37,13 @@ Tu es le rédacteur en chef de Luxsure.fr. Tu transformes les dossiers de presse
 ### Dossiers locaux
 
 - `$AECRIRE` : `find /sessions -maxdepth 3 -type d -iname "A ecrire" 2>/dev/null | head -1`. Introuvable → Étape 1 bloquante (voir plus bas).
-- `$AECRIRE/_luxsure/journal.jsonl` : journal transactionnel (une ligne JSON par événement, jamais réécrit, seulement complété).
-- `$AECRIRE/_luxsure/medias/<slug>/` : fichiers visuels reçus, copies web et `manifest.json`.
-- `$AECRIRE/_luxsure/bilans/AAAA-MM-JJ_HHMM.md` : bilan de chaque passage.
+- `$AECRIRE/_outils/articles-gmail/journal.jsonl` : journal transactionnel (une ligne JSON par événement, jamais réécrit, seulement complété).
+- `$AECRIRE/_outils/articles-gmail/medias/<slug>/` : fichiers visuels reçus, copies web et `manifest.json`.
+- `$AECRIRE/_outils/articles-gmail/bilans/AAAA-MM-JJ_HHMM.md` : bilan de chaque passage.
 
-Les sous-dossiers `_luxsure/` ne contiennent **aucun .docx**, pour que `luxsure-publish-wordpress-drafts` ne lise que la racine de `$AECRIRE`.
+**Pourquoi `_outils/`.** `luxsure-publish-wordpress-drafts` reprend tout `.docx` de `$AECRIRE` **à n'importe quelle profondeur** (y compris `outputs/`), sauf dans `archives/`, `Archive doublons/`, `_outils/`, et sauf les noms commençant par `[` ou contenant `LUXSURE DRAFT`. Tout ce qui ne doit pas devenir un brouillon (journal, médias, bilans, versions ultérieures) vit donc sous `_outils/articles-gmail/`. Ne jamais toucher à `_outils/etat.json` ni à `_outils/luxsure_publish_lib.py`, qui appartiennent à la tâche de publication.
+
+**Après création**, la tâche de publication déplace le .docx dans `archives/` du même dossier : pour savoir si un article a déjà été livré, chercher le slug à la racine **et** dans `archives/`.
 
 ### Accès WordPress
 
@@ -49,7 +51,7 @@ Même accès que la V1 et que `luxsure-publish-wordpress-drafts` : API REST `htt
 
 ## Étape 1 — Précontrôle et ouverture du passage
 
-1. Localiser `$AECRIRE` ; créer `_luxsure/`, `_luxsure/medias/`, `_luxsure/bilans/` si absents.
+1. Localiser `$AECRIRE` ; créer `_outils/articles-gmail/`, `_outils/articles-gmail/medias/`, `_outils/articles-gmail/bilans/` si absents.
 2. Tester l'accès WordPress en lecture : `GET /wp-json/wp/v2/users/214?context=edit&_fields=id,name,roles` et `GET /wp-json/wp/v2/posts?status=draft&per_page=1&_fields=id`.
 3. Tester Gmail : `list_labels` et vérifier les IDs ci-dessus.
 4. Écrire dans le journal `{"type":"passage_ouvert","horodatage":…,"precontrole":{…}}`.
@@ -78,7 +80,15 @@ Pour chaque source réservée :
 
 Charger `luxsure-doctrine` puis `luxsureweb` et exécuter leurs six étapes dans l'ordre (Filtre et régime, triage, profil et format, angle, rédaction, bon à publier). Le texte public est **autonome** : il ne raconte ni la réception de l'email, ni le travail sur le dossier de presse. Les sources détaillées et les réserves restent dans le dossier interne (`manifest.json`, bloc « Champs manquants »).
 
-**Structure du .docx — strictement celle attendue par `luxsure-publish-wordpress-drafts`** : titre (Titre 1) ; chapeau de 3 lignes maximum ; corps en prose ; intertitres (Titre 2, narratifs, 9 mots maximum, sans ponctuation finale) seulement s'ils servent la lecture ; puis le bloc « Métadonnées Rank Math » : `Titre SEO :` (50–58 car.), `Slug :` (≤75 car., sans date ni stopwords), `Méta-description :` (155–160 car.), `Mot-clé principal :`, `Mots-clés secondaires :` (3 à 5), `Schema type :` (NewsArticle par défaut), `Format :` (format, profil, régime) ; enfin le bloc « Champs manquants ». Ajouter dans ce dernier bloc : catégorie proposée, 3 à 5 étiquettes, liens utiles. Aucune image dans ce .docx : l'illustration est suivie séparément (Étape 5).
+**Structure du .docx — strictement celle attendue par `luxsure-publish-wordpress-drafts`** : titre (Titre 1) ; chapeau de 3 lignes maximum ; corps en prose ; intertitres (Titre 2, narratifs, 9 mots maximum, sans ponctuation finale) seulement s'ils servent la lecture ; puis le bloc « Métadonnées Rank Math » : `Titre SEO :` (50–58 car.), `Slug :` (≤75 car., sans date ni stopwords), `Méta-description :` (155–160 car.), `Mot-clé principal :`, `Mots-clés secondaires :` (3 à 5), `Schema type :` (NewsArticle par défaut), `Format :` (format, profil, régime) ; enfin le bloc « Champs manquants ». Ajouter dans ce dernier bloc : catégorie proposée, 3 à 5 étiquettes, liens utiles.
+
+**Image à la une dans le .docx.** La bibliothèque `luxsure_publish_lib.py` prend comme image à la une **la plus grande image incluse dans le .docx**, et lit les lignes `Crédit photo :` et `Image : <url>`. Donc, lorsqu'une photographie a passé les contrôles de l'Étape 5 (droits, concordance, pas d'embargo) **avant** la livraison du .docx :
+- insérer dans le .docx la **copie web** de cette seule image (la plus grande du document — aucune autre image ne doit la dépasser) ;
+- ajouter la ligne `Crédit photo : <crédit exact, avec « Rendu 3D. » le cas échéant>` ;
+- consigner dans le manifeste `role: "une (via docx)"`.
+Les images du corps ne sont jamais mises dans le .docx : elles sont ajoutées au brouillon après sa création (Étape 5.6). Si aucune image n'est validée à temps, livrer le .docx sans image : la tâche de publication signalera « pas d'image à la une » et l'Étape 5 complétera ensuite le brouillon.
+
+**Noms de fichier.** Jamais de nom commençant par `[` ni contenant `LUXSURE DRAFT` pour un article à créer (ces fichiers sont ignorés par la publication).
 
 **Fichiers manquants** : si le texte est suffisant mais que des visuels restent inaccessibles, la première ligne du corps est l'encart :
 `À compléter avant publication — fichiers à récupérer : <lien exact> — <éléments manquants>`
@@ -92,7 +102,7 @@ Suivi par une clé distincte `media:gmail:<threadId>` dans le journal, indépend
 
 ### 5.1 Rechercher activement
 
-Ouvrir tous les liens fournis avec la source : Google Drive (connecteur Drive pour lister, `https://drive.usercontent.google.com/download?id=<id>&export=download&confirm=t` pour télécharger un fichier partagé), Dropbox (`?dl=1`), WeTransfer, photothèques et espaces presse ; examiner les pièces jointes. Télécharger dans `_luxsure/medias/<slug>/originaux/`.
+Ouvrir tous les liens fournis avec la source : Google Drive (connecteur Drive pour lister, `https://drive.usercontent.google.com/download?id=<id>&export=download&confirm=t` pour télécharger un fichier partagé), Dropbox (`?dl=1`), WeTransfer, photothèques et espaces presse ; examiner les pièces jointes. Télécharger dans `_outils/articles-gmail/medias/<slug>/originaux/`.
 
 ### 5.2 Contrôler le contenu réel
 
@@ -107,7 +117,7 @@ Pour chaque fichier : `file` (format réel — une page HTML de connexion enregi
 
 ### 5.4 Manifeste
 
-`_luxsure/medias/<slug>/manifest.json`, une entrée par image retenue :
+`_outils/articles-gmail/medias/<slug>/manifest.json`, une entrée par image retenue :
 
 ```json
 {
@@ -131,11 +141,12 @@ Pour chaque fichier : `file` (format réel — une page HTML de connexion enregi
 
 ### 5.5 Attendre le brouillon créé par `luxsure-publish-wordpress-drafts`
 
-L'article n'est **pas** créé par ce skill. Après le passage de `luxsure-publish-wordpress-drafts`, retrouver le brouillon par **slug exact** : `GET /posts?slug=<slug>&status=draft,pending,private,publish&context=edit&_fields=id,slug,status,author,title,excerpt,content,categories,tags,featured_media,modified`.
+L'article n'est **pas** créé par ce skill. Après le passage de `luxsure-publish-wordpress-drafts` (quatre fois par jour ; son résultat `created` / `skipped_duplicate` n'est pas visible d'ici), retrouver le brouillon par **slug exact** : `GET /posts?slug=<slug>&status=draft,pending,private,publish&context=edit&_fields=id,slug,status,author,title,excerpt,content,categories,tags,featured_media,modified`.
 
 - Introuvable → `media:gmail:<id>` reste `en_attente: brouillon non encore créé` ; reprise au passage suivant.
 - Statut autre que `draft` → ne rien modifier ; journaliser et signaler.
-- `author` ≠ 214 → ne pas corriger silencieusement ; signaler dans le bilan.
+- `author` ≠ 214 → ne pas corriger silencieusement ; signaler dans le bilan (le prompt de la tâche de publication ne fixe pas l'auteur : à vérifier dans `luxsure_publish_lib.py`).
+- Les finitions automatiques de la bibliothèque (chapô, H2, « Source : », typographie, « À lire aussi », alt et légende de l'image à la une, méta-description de repli) font partie de l'état de départ : ce ne sont pas des modifications humaines.
 
 **Preuve de départ** : enregistrer dans le journal l'empreinte SHA-256 de `content.raw`, `title.raw`, `excerpt.raw`, statut, auteur, catégories, étiquettes, `featured_media`, `modified`. Si une preuve précédente existe et diffère : **modification humaine** → ne pas toucher au corps ; seule l'image à la une peut être ajoutée si `featured_media` est vide ; signaler le reste dans le bilan.
 
@@ -144,7 +155,7 @@ L'article n'est **pas** créé par ce skill. Après le passage de `luxsure-publi
 1. **Avant chaque import**, chercher si le média existe déjà : `GET /media?search=<nom de fichier>&_fields=id,source_url,title,media_details` et comparer au manifeste. Ne jamais réimporter un fichier déjà présent.
 2. Import : `POST /wp-json/wp/v2/media` avec `Content-Disposition: attachment; filename="<slug>-<n>.jpg"` et le bon `Content-Type`.
 3. Métadonnées : `POST /media/<id>` avec `title` descriptif, `alt_text` naturel (ce que montre l'image, sans mots-clés empilés), `caption` contenant le crédit (« Rendu 3D. © Emily Lab » / « © DConstantini »), `post: <id du brouillon>`.
-4. **Image à la une** : `POST /posts/<id>` avec `featured_media`, en renvoyant `status: "draft"` explicitement.
+4. **Image à la une** : si elle a été fournie via le .docx, vérifier seulement qu'elle est posée et créditée (alt, légende). Sinon, ou si la tâche de publication a signalé « pas d'image à la une » : `POST /posts/<id>` avec `featured_media`, en renvoyant `status: "draft"` explicitement. Ne jamais remplacer une image à la une déjà posée sans que le manifeste établisse qu'elle est erronée.
 5. **Images dans le corps** (seulement si elles servent la lecture, jamais répétitives) : insérer un bloc `<!-- wp:image {"id":<media_id>,"sizeDestination":"large"} -->` avec `<figcaption>` (légende + crédit) après le paragraphe qu'elle éclaire, dans `content.raw` récupéré à l'instant, puis `POST /posts/<id>` avec `content` et `status: "draft"`.
 6. Encart « À compléter » : le retirer du corps uniquement si le manque qu'il signale est résolu ; sinon le mettre à jour.
 
@@ -164,13 +175,13 @@ L'article n'est **pas** créé par ce skill. Après le passage de `luxsure-publi
 
 ## Étape 7 — Reprises sans perte du travail humain
 
-- **.docx déjà présent pour ce slug** : ne pas l'écraser. Une version illustrée ou corrigée porte un nom distinct (`AAAA-MM-JJ_<slug>_v2-illustree.docx`) et n'est produite qu'à la demande ; elle est contrôlée à nouveau. Attention : tout .docx à la racine pouvant être repris par `luxsure-publish-wordpress-drafts`, une version ultérieure se dépose dans `_luxsure/exports/`, jamais à la racine.
+- **.docx déjà présent pour ce slug** : ne pas l'écraser. Une version illustrée ou corrigée porte un nom distinct (`AAAA-MM-JJ_<slug>_v2-illustree.docx`) et n'est produite qu'à la demande ; elle est contrôlée à nouveau. Attention : tout .docx à la racine pouvant être repris par `luxsure-publish-wordpress-drafts`, une version ultérieure se dépose dans `_outils/articles-gmail/exports/`, jamais à la racine.
 - **Brouillon déjà existant** : on complète (Étape 5), on ne recrée jamais.
 - **Réservation orpheline** : vérifier `$AECRIRE` et WordPress (slug exact) avant de reprendre.
 
 ## Étape 8 — Bilan du passage
 
-Écrire `_luxsure/bilans/AAAA-MM-JJ_HHMM.md` et terminer par un message court et exact :
+Écrire `_outils/articles-gmail/bilans/AAAA-MM-JJ_HHMM.md` et terminer par un message court et exact :
 
 - nouveaux .docx (nom de fichier) et brouillons WordPress correspondants retrouvés (lien `https://www.luxsure.fr/wp-admin/post.php?post=<id>&action=edit`) ;
 - articles illustrés (IDs médias, image à la une, nombre d'images dans le corps) ;
